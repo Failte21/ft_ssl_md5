@@ -6,7 +6,7 @@
 /*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/03 14:52:24 by lsimon            #+#    #+#             */
-/*   Updated: 2018/12/08 13:16:07 by lsimon           ###   ########.fr       */
+/*   Updated: 2019/10/10 10:20:18 by lsimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 # define BUFF_SIZE 1
 
 # include <string.h>
+# include <stdlib.h>
+# include <unistd.h>
 
 typedef struct	s_list
 {
@@ -33,6 +35,7 @@ void			*ft_memchr(const void *s, int c, size_t n);
 int				ft_memcmp(const void *s1, const void *s2, size_t n);
 size_t			ft_strlen(const char *str);
 char			*ft_strdup(const char *s);
+char			*ft_strndup(const char *s1, size_t n);
 char			*ft_strcpy(char *dest, char *src);
 char			*ft_strncpy(char *dest, char *src, size_t len);
 char			*ft_strcat(char *s1, const char *s2);
@@ -94,5 +97,6 @@ void			ft_put_hex_precision(unsigned long value,\
 void			ft_put_hex_swap(unsigned long value);
 void			ft_put_hex_swap(unsigned long value);
 void			ft_put_byte_base(char byte, unsigned int base);
+int				get_next_line(const int fd, char **line);
 
 #endif

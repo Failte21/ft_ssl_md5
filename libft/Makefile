@@ -6,7 +6,7 @@
 #    By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/11/07 10:36:05 by lsimon            #+#    #+#              #
-#    Updated: 2018/12/04 12:23:21 by lsimon           ###   ########.fr        #
+#    Updated: 2019/10/10 09:54:51 by lsimon           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,6 +14,7 @@ CFLAGS = -Wall -Wextra -Werror
 
 SRCS =	ft_atoi.c\
 		ft_bzero.c\
+		ft_get_next_line.c\
 		ft_isalnum.c\
 		ft_isalpha.c\
 		ft_isascii.c\
@@ -43,6 +44,7 @@ SRCS =	ft_atoi.c\
 		ft_strcpy.c\
 		ft_strdel.c\
 		ft_strdup.c\
+		ft_strndup.c\
 		ft_strequ.c\
 		ft_striter.c\
 		ft_striteri.c\
@@ -99,9 +101,9 @@ $(NAME): $(OBJS)
 .PHONY: clean fclean
 
 clean:
-	rm -rf $(OBJS)
+	@rm -rf $(OBJS)
 
 fclean: clean
-	rm -rf $(NAME)
+	@rm -rf $(NAME)
 
 re: fclean all

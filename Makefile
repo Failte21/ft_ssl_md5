@@ -6,7 +6,7 @@
 #    By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/10/17 11:11:59 by lsimon            #+#    #+#              #
-#    Updated: 2019/11/04 10:22:03 by lsimon           ###   ########.fr        #
+#    Updated: 2019/11/04 10:58:28 by lsimon           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,6 +21,8 @@ OBJS_DIR = objs
 NAME = ft_ssl
 
 SRC_NAMES += ft_ssl.c
+SRC_NAMES += md5.c
+SRC_NAMES += sha256.c
 SRCS = $(addprefix $(SRCS_DIR)/, $(NM_SRC_NAMES))
 
 OBJ_NAMES = $(SRC_NAMES:.c=.o)
