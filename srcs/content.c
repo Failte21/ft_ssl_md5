@@ -6,7 +6,7 @@
 /*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/04 16:04:49 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/04 16:15:55 by lsimon           ###   ########.fr       */
+/*   Updated: 2019/11/04 16:37:16 by lsimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ char				*get_content(int fd)
 	char			*to_hash;
 	char			*tmp;
 	int				r;
+	unsigned int	len;
 
 	to_hash = NULL;
 	while ((r = read(fd, buf, BUF_SIZE - 1)))
@@ -34,5 +35,8 @@ char				*get_content(int fd)
 			free(tmp);
 		}
 	}
+	len = ft_strlen(to_hash) - 1;
+	if (to_hash[len] == '\n')
+		to_hash[len] = '\0';
 	return (to_hash);
 }
