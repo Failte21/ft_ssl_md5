@@ -6,7 +6,7 @@
 /*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/04 10:26:16 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/04 12:49:32 by lsimon           ###   ########.fr       */
+/*   Updated: 2019/11/04 14:03:39 by lsimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 # include <stdlib.h>
 # include <stdio.h>
 # include <stdbool.h>
+# include <fcntl.h>
+# include <errno.h>
 
 /*
 ** takes a string and return the hashed string
