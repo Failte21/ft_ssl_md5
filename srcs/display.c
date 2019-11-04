@@ -1,41 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_ssl.c                                           :+:      :+:    :+:   */
+/*   display.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/04 10:22:26 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/04 16:15:20 by lsimon           ###   ########.fr       */
+/*   Created: 2019/11/04 16:13:13 by lsimon            #+#    #+#             */
+/*   Updated: 2019/11/04 16:13:46 by lsimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ft_ssl.h"
 
-int					main(int ac, char **av)
+static void	print_rev(char *s)
 {
-	t_handler	*h;
-	char		*hashed;
+	int	i;
 
-	h = init_handler(ac, av);
-	if (h == NULL)
-		return (1);
-	if (handle_flags(h, av + 2) == -1)
+	i = ft_strlen(s) - 1;
+	while (i >= 0)
 	{
-		free(h);
-		return (-1);
+		write(0, &(s[i]), 1);
+		i--;
 	}
-	h->to_hash = h->to_hash == NULL ? get_content(0) : h->to_hash;
-	if (h->to_hash == NULL)
+}
+
+void		display(t_handler *handler, char *hashed)
+{
+	if (handler->verbose && !handler->quiet)
 	{
-		free(h);
-		return (1);
+		ft_putstr(handler->to_hash);
+		ft_putchar('\n');
 	}
-	if ((hashed = h->hash_fn(h->to_hash)) == NULL)
-	{
-		free(h);
-		return (1);
-	}
-	display(h, hashed);
-	return (0);
+	if (handler->reversed)
+		print_rev(hashed);
+	else
+		ft_putstr(hashed);
+	ft_putchar('\n');
 }
