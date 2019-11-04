@@ -6,11 +6,88 @@
 /*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/04 10:22:26 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/04 11:46:58 by lsimon           ###   ########.fr       */
+/*   Updated: 2019/11/04 12:51:17 by lsimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ft_ssl.h"
+
+
+void				quiet_mode(t_handler *handler)
+{
+	handler->quiet = true;
+}
+
+void				verbose_mode(t_handler *handler)
+{
+	handler->verbose = true;
+}
+
+void				reversed_mode(t_handler *handler)
+{
+	handler->reversed = true;
+}
+
+int					string_mode(t_handler *handler, char *s)
+{
+	if (s == NULL)
+		return (-1);
+	handler->to_hash = s;
+	return (0);
+}
+
+static t_flag_fn	get_flag_fn_aux(char c, unsigned int i)
+{
+	if (g_flag_handlers[i].flag == 0)
+	{
+		ft_putstr_fd("Unknown flag: ", 1);
+		ft_putchar_fd(c, 1);
+		ft_putchar_fd('\n', 1);
+		return (NULL);
+	}
+	if (g_flag_handlers[i].flag == c)
+		return (g_flag_handlers[i].flag_fn);
+	return (get_flag_fn_aux(c, i + 1));
+}
+
+t_flag_fn			get_flag_fn(char c)
+{
+	return get_flag_fn_aux(c, 0);
+}
+
+int					handle_flags_aux(t_handler *handler, char **args, unsigned int i)
+{
+	unsigned int	j;
+	t_flag_fn		flag_fn;
+
+	j = 1;
+	if (*args == NULL)
+		return (0);
+	if (*(args[i]) == '-')
+	{
+		if (ft_strcmp(args[i], "s") == 0)
+		{
+			i += 1;
+			if ((string_mode(handler, args[i + 1])) == -1)
+				return (-1);
+		}
+		else
+		{
+			while (args[i][j] != '\0')
+			{
+				if ((flag_fn = get_flag_fn(args[i][j])) == NULL)
+					return (-1);
+				flag_fn(handler);
+			}
+		}
+	}
+	return (handle_flags_aux(handler, args, i + 1));
+}
+
+int					handle_flags(t_handler *handler, char **args)
+{
+	return (handle_flags_aux(handler, args, 0));
+}
 
 static t_hash_fn	get_hash_fn_aux(char *hash, unsigned int i)
 {
