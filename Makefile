@@ -6,7 +6,7 @@
 #    By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/10/17 11:11:59 by lsimon            #+#    #+#              #
-#    Updated: 2019/11/04 10:58:28 by lsimon           ###   ########.fr        #
+#    Updated: 2019/11/04 16:24:13 by lsimon           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,6 +23,14 @@ NAME = ft_ssl
 SRC_NAMES += ft_ssl.c
 SRC_NAMES += md5.c
 SRC_NAMES += sha256.c
+SRC_NAMES += flags.c
+SRC_NAMES += content.c
+SRC_NAMES += file.c
+SRC_NAMES += parsing.c
+SRC_NAMES += display.c
+SRC_NAMES += string.c
+SRC_NAMES += hash.c
+
 SRCS = $(addprefix $(SRCS_DIR)/, $(NM_SRC_NAMES))
 
 OBJ_NAMES = $(SRC_NAMES:.c=.o)

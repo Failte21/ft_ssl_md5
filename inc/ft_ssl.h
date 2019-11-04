@@ -6,7 +6,7 @@
 /*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/04 10:26:16 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/04 14:03:39 by lsimon           ###   ########.fr       */
+/*   Updated: 2019/11/04 16:24:02 by lsimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,12 +56,27 @@ typedef struct		s_flag_handler
 	t_flag_fn	flag_fn;
 }					t_flag_handler;
 
+/*
+** Flags
+*/
 void				quiet_mode(t_handler *handler);
 void				verbose_mode(t_handler *handler);
 void				reversed_mode(t_handler *handler);
+t_flag_fn			get_flag_fn(char c);
+int					string_mode(t_handler *handler, char *s);
 
 char				*hash_md5(char *s);
 char				*hash_sha256(char *s);
+
+char				*get_content(int fd);
+
+int					handle_file(t_handler *handler, char **args);
+
+t_handler			*init_handler(int ac, char **av);
+int					handle_flags(t_handler *handler, char **args);
+t_hash_fn			get_hash_fn(char *hash);
+
+void				display(t_handler *handler, char *hashed);
 
 static t_hash_handler	g_hash_table[] =
 {

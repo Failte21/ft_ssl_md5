@@ -1,41 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_ssl.c                                           :+:      :+:    :+:   */
+/*   string.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/04 10:22:26 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/04 16:15:20 by lsimon           ###   ########.fr       */
+/*   Created: 2019/11/04 16:20:36 by lsimon            #+#    #+#             */
+/*   Updated: 2019/11/04 16:21:06 by lsimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ft_ssl.h"
 
-int					main(int ac, char **av)
+int					string_mode(t_handler *handler, char *s)
 {
-	t_handler	*h;
-	char		*hashed;
-
-	h = init_handler(ac, av);
-	if (h == NULL)
-		return (1);
-	if (handle_flags(h, av + 2) == -1)
-	{
-		free(h);
+	if (s == NULL)
 		return (-1);
-	}
-	h->to_hash = h->to_hash == NULL ? get_content(0) : h->to_hash;
-	if (h->to_hash == NULL)
-	{
-		free(h);
-		return (1);
-	}
-	if ((hashed = h->hash_fn(h->to_hash)) == NULL)
-	{
-		free(h);
-		return (1);
-	}
-	display(h, hashed);
+	handler->to_hash = s;
 	return (0);
 }
