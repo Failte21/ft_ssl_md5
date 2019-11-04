@@ -6,7 +6,7 @@
 /*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/04 10:22:26 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/04 15:19:21 by lsimon           ###   ########.fr       */
+/*   Updated: 2019/11/04 15:41:10 by lsimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,6 @@ int					string_mode(t_handler *handler, char *s)
 	if (s == NULL)
 		return (-1);
 	handler->to_hash = s;
-	printf("(debug) STRING MODE s: %s\n", s);
 	return (0);
 }
 
@@ -126,7 +125,6 @@ int					handle_flags_aux(t_handler *handler, char **args, unsigned int i)
 	t_flag_fn		flag_fn;
 
 	j = 1;
-	printf("(debug) args[i]: %s\n", args[i]);
 	if (args[i] == NULL)
 		return (0);
 	if (*(args[i]) == '-')
@@ -144,6 +142,7 @@ int					handle_flags_aux(t_handler *handler, char **args, unsigned int i)
 				if ((flag_fn = get_flag_fn(args[i][j])) == NULL)
 					return (-1);
 				flag_fn(handler);
+				j++;
 			}
 		}
 		return (handle_flags_aux(handler, args, i + 1));
@@ -196,7 +195,36 @@ t_handler			*init_handler(int ac, char **av)
 	handler->hash_fn = hash_fn;
 	handler->flags = NULL;
 	handler->to_hash = NULL;
+	handler->reversed = false;
+	handler->quiet = false;
+	handler->verbose = false;
 	return (handler);
+}
+
+void				print_rev(char *s)
+{
+	int	i;
+
+	i = ft_strlen(s) - 1;
+	while (i >= 0)
+	{
+		write(0, &(s[i]), 1);
+		i--;
+	}
+}
+
+void				display(t_handler *handler, char *hashed)
+{
+	if (handler->verbose && !handler->quiet)
+	{
+		ft_putstr(handler->to_hash);
+		ft_putchar('\n');
+	}
+	if (handler->reversed)
+		print_rev(hashed);
+	else
+		ft_putstr(hashed);
+	ft_putchar('\n');
 }
 
 int					main(int ac, char **av)
@@ -225,6 +253,6 @@ int					main(int ac, char **av)
 		free(handler);
 		return (1);
 	}
-	printf("(debug) hashed: %s\n", hashed);
+	display(handler, hashed);
 	return (0);
 }
