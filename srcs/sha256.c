@@ -6,36 +6,54 @@
 /*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/04 10:54:27 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/05 16:03:39 by lsimon           ###   ########.fr       */
+/*   Updated: 2019/11/05 19:54:03 by lsimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ft_ssl.h"
 
+#define UINT32_T_SIZE sizeof(uint32_t)
+#define UINT32_T_BITS (UINT32_T_SIZE * 8 - 1)
+
+static uint32_t rotateRight(int num, unsigned int rotation)
+{
+    int DROPPED_LSB;
+
+    rotation %= UINT32_T_BITS;
+    while(rotation--)
+    {
+        DROPPED_LSB = num & 1;
+        num = (num >> 1) & (~(1 << UINT32_T_BITS));
+        num = num | (DROPPED_LSB << UINT32_T_BITS);
+	}
+
+    return num;
+}
+
 /*
 **Initialize hash values:
 **(first 32 bits of the fractional parts of the square roots of the first 8 primes 2..19):
 */
-static unsigned int	g_h0 = 0x6a09e667;
-static unsigned int	g_h1 = 0xbb67ae85;
-static unsigned int	g_h2 = 0x3c6ef372;
-static unsigned int	g_h3 = 0xa54ff53a;
-static unsigned int	g_h4 = 0x510e527f;
-static unsigned int	g_h5 = 0x9b05688c;
-static unsigned int	g_h6 = 0x1f83d9ab;
-static unsigned int	g_h7 = 0x5be0cd19;
+static uint32_t	g_h0 = 0x6a09e667;
+static uint32_t	g_h1 = 0xbb67ae85;
+static uint32_t	g_h2 = 0x3c6ef372;
+static uint32_t	g_h3 = 0xa54ff53a;
+static uint32_t	g_h4 = 0x510e527f;
+static uint32_t	g_h5 = 0x9b05688c;
+static uint32_t	g_h6 = 0x1f83d9ab;
+static uint32_t	g_h7 = 0x5be0cd19;
 
-// static unsigned int	g_k[] =
-// {
-//    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
-//    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
-//    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
-//    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
-//    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
-//    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
-//    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
-//    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
-// };
+static unsigned int	g_k[] =
+{
+   0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+   0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+   0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+   0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+   0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+   0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+   0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+   0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+};
 
 /*
 ** Pre-processing (Padding):
@@ -44,21 +62,63 @@ static unsigned int	g_h7 = 0x5be0cd19;
 ** append K '0' bits, where K is the minimum number >= 0 such that L + 1 + K + 64 is a multiple of 512
 ** append L as a 64-bit big-endian integer, making the total post-processed length a multiple of 512 bits
 */
-// static char	*pad(char *s)
-// {
-// }
+static t_mem pad(char *s)
+{
+	uint32_t	L;
+	uint32_t	K;
+	uint32_t	*to_add;
+	uint32_t	i;
+	uint32_t	j;
+	t_mem		padded;
+
+	printf("(debug) PADDING\n");
+	L = ft_strlen(s) * 8;
+	K = 512 - ((L + 1 + 64) % 512);
+	printf("(debug) L: %u\n", L);
+	printf("(debug) K: %u\n", K);
+	to_add = malloc((K / 8) * sizeof(K) + 1 + (64 / 8));
+	to_add[0] |= 1 << 0;
+	i = 1;
+	while (i < K)
+	{
+		j = i / 64;
+		to_add[j] |= 0 << i;
+		i++;
+	}
+	to_add[i] = (uint64_t)L;
+	padded.content = malloc(((L + K) / 8) * sizeof(K) + 1);
+	printf("(debug) (uint64_t)L: %llu\n", (uint64_t)L);
+	memcpy(padded.content, s, (L / 8));
+	memcpy(padded.content + (L / 8), to_add, (K / 8) * sizeof(K) + 1);
+	free(to_add);
+	padded.n_chunks = (L + K + 64 + 1) / 512;
+	printf("(debug) padded.n_chunks: %zu\n", padded.n_chunks);
+	return (padded);
+}
 
 /*
 ** break message into 512-bit chunks
 */
-// static char	**message_to_chunks(char *message)
-// {
-// }
+static uint32_t	**message_to_chunks(uint32_t *padded_content, size_t n_chunks)
+{
+	uint32_t	**chunks;
+	size_t		i;
+
+	printf("(debug) SPLITING INTO %zu 512 BITS CHUNKS\n", n_chunks);
+	chunks = malloc(n_chunks);
+	i = 0;
+	while (i < n_chunks)
+	{
+		chunks[i] = padded_content + (64 * i);
+		i++;
+	}
+	return (chunks);
+}
 
 /*
 ** create a 64-entry message schedule array w[0..63] of 32-bit words
 */
-// static char	**chunk_to_words(char *chunk)
+// static uint32_t	**chunk_to_words(uint32_t *chunk)
 // {
 // }
 
@@ -72,9 +132,35 @@ static unsigned int	g_h7 = 0x5be0cd19;
 **     s1 := (w[i- 2] rightrotate 17) xor (w[i- 2] rightrotate 19) xor (w[i- 2] rightshift 10)
 **     w[i] := w[i-16] + s0 + w[i-7] + s1
 */
-// static char **preprocess(char **words)
-// {
-// }
+static uint32_t *preprocess(uint32_t *chunk)
+{
+	uint32_t	*w;
+	size_t		i;
+	uint32_t	s0;
+	uint32_t	s1;
+
+	printf("(debug) create a 64-entry message schedule array w[0..63] of 32-bit words\n");
+	w = malloc(64);
+	i = 0;
+	while (i < 16)
+	{
+		w[i] = chunk[i];
+		i++;
+	}
+	printf("(debug) PREPROCESS, PHASE 2\n");
+	while (i < 64)
+	{
+		s0 = (rotateRight(w[i - 15], 7) ^ (rotateRight(w[i - 15], 18)) ^ (w[i - 15] >> 18));
+		s1 = (rotateRight(w[i - 2], 17) ^ (rotateRight(w[i - 2], 19) ^ (w[i - 2] >> 10)));
+		w[i] = w[i - 16] + s0 + w[i - 7] + s1;
+		i++;
+	}
+	printf("(debug) chunk[i - 4]: %u\n", chunk[i - 4]);
+	printf("(debug) chunk[i - 3]: %u\n", chunk[i - 3]);
+	printf("(debug) chunk[i - 2]: %u\n", chunk[i - 2]);
+	printf("(debug) chunk[i]: %u\n", chunk[i - 1]);
+	return (w);
+}
 
 /*
 ** Initialize working variables to current hash value:
@@ -116,24 +202,62 @@ static unsigned int	g_h7 = 0x5be0cd19;
 **    h7 := h7 + h
 **
 */
-// void	compress(char **words)
-// {
-// }
+void	compress(uint32_t *w)
+{
+	uint32_t	a = g_h0;
+	uint32_t	b = g_h1;
+	uint32_t	c = g_h2;
+	uint32_t	d = g_h3;
+	uint32_t	e = g_h4;
+	uint32_t	f = g_h5;
+	uint32_t	g = g_h6;
+	uint32_t	h = g_h7;
 
-// void	process_chunks(char **chunks, unsigned int i)
-// {
-// 	char	**words;
-// 	char	**preprocessed_words;
+	size_t		i;
 
-// 	if (chunks[i] == NULL)
-// 		return ;
-// 	words = chunk_to_words(chunks[i]);
-// 	preprocessed_words = preprocess(words);
-// 	compress(preprocessed_words);
-// 	process_chunks(chunks, i + 1);
-// }
+	printf("(debug) COMPRESS\n");
+	i = 0;
+	while (i < 64)
+	{
+		uint32_t	s1 = rotateRight(e, 6) ^ rotateRight(e, 11) ^ rotateRight(e, 25);
+		uint32_t	ch = (e && f) ^ (!e && g);
+		uint32_t	temp1 = h + s1 + ch + g_k[i] + w[i];
+		uint32_t	s0 = rotateRight(a, 2) ^ rotateRight(a, 13) ^ rotateRight(a, 22);
+		uint32_t	maj = (a && b) ^ (a && c) ^ (b && c);
+		uint32_t	temp2 = s0 + maj;
 
-static char	*ft_itoa_base_aux(unsigned int n, unsigned int base, char *base_s, char *acc)
+		h = g;
+		g = f;
+		f = e;
+		e = d + temp1;
+		d = c;
+		c = b;
+		b = a;
+		a = temp1 + temp2;
+		i++;
+	}
+	g_h0 = g_h0 + a;
+	g_h1 = g_h1 + b;
+	g_h2 = g_h2 + c;
+	g_h3 = g_h3 + d;
+	g_h4 = g_h4 + e;
+	g_h5 = g_h5 + f;
+	g_h6 = g_h6 + g;
+	g_h7 = g_h7 + h;
+}
+
+void	process_chunks(uint32_t **chunks, size_t n_chunks, size_t i)
+{
+	uint32_t	*w;
+
+	if (i == n_chunks)
+		return ;
+	w = preprocess(chunks[i]);
+	compress(w);
+	process_chunks(chunks, n_chunks, i + 1);
+}
+
+static char	*ft_itoa_base_aux(unsigned int n, unsigned int base, const char *base_s, char *acc)
 {
 	char			*s;
 
@@ -150,13 +274,9 @@ static char	*ft_itoa_base_aux(unsigned int n, unsigned int base, char *base_s, c
 
 char		*ft_itoa_base(unsigned int n, unsigned int base)
 {
-	const char	*all_base = "0123456789abcdef";
-	char		*base_s;
 	char		*s;
 
-		base_s = ft_strsub(all_base, 0, base);
-	s = ft_itoa_base_aux(n, base, base_s, ft_strdup(""));
-	free(base_s);
+	s = ft_itoa_base_aux(n, base, "0123456789abcdef", ft_strdup(""));
 	return (s);
 }
 /*
@@ -167,6 +287,7 @@ static char	*digest(void)
 {
 	char	*hash;
 
+	printf("(debug) DIGEST\n");
 	hash = malloc(1000);
 	ft_strcpy(hash, ft_itoa_base(g_h0, 16));
 	ft_strcat(hash, ft_itoa_base(g_h1, 16));
@@ -181,13 +302,15 @@ static char	*digest(void)
 
 char	*hash_sha256(char *message)
 {
-	// char	*padded;
-	// char	**chunks;
-	(void)message;
+	t_mem		padded;
+	uint32_t	**chunks;
 
-	// padded = pad(message);
-	// chunks = message_to_chunks(message);
+	(void)message;
+	printf("(debug) g_h0: %u\n", g_h0);
+	printf("(debug) g_k[0]: %u\n", g_k[0]);
+	padded = pad("");
+	chunks = message_to_chunks(padded.content, padded.n_chunks);
+	process_chunks(chunks, padded.n_chunks, 0);
+	free(padded.content);
 	return (digest());
-	// printf("(debug) sizeof(unsigned int): %zu\n", sizeof(unsigned int));
-	// return (message);
 }
