@@ -6,7 +6,7 @@
 /*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/04 10:54:27 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/06 10:25:11 by lsimon           ###   ########.fr       */
+/*   Updated: 2019/11/06 11:23:52 by lsimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,9 @@
 #define UINT32_T_SIZE sizeof(uint32_t)
 #define UINT32_T_BITS (UINT32_T_SIZE * 8 - 1)
 
-static uint32_t rotateRight(int num, unsigned int rotation)
+static uint32_t rotateRight(uint32_t num, unsigned int rotation)
 {
-    int DROPPED_LSB;
+    uint32_t DROPPED_LSB;
 
     rotation %= UINT32_T_BITS;
     while(rotation--)
@@ -91,9 +91,10 @@ static t_mem 	pad(char *s)
 	printf("(debug) K: %u\n", K);
 	printf("(debug) padded.byte_size: %zu\n", padded.byte_size);
 	printf("(debug) padded.n_chunks: %zu\n", padded.n_chunks);
-	ft_bzero(padded.content, padded.byte_size);
+	ft_memset(padded.content, 0, padded.byte_size);
+	// ft_bzero(padded.content, padded.byte_size);
 	ft_memcpy(padded.content, s, message_len);
-	padded.content[message_len] = 1;
+	padded.content[message_len] |= 1 << 0;
 	padded.content[padded.byte_size - 2] = (uint64_t)L;
 	printf("(debug) padded.content[message_len]: %u\n", padded.content[message_len]);
 	printf("(debug) padded.content[padded.byte_size - 2]: %u\n", padded.content[padded.byte_size - 2]);
@@ -113,6 +114,7 @@ static uint32_t	**message_to_chunks(uint32_t *padded_content, size_t n_chunks)
 	i = 0;
 	while (i < n_chunks)
 	{
+		printf("(debug) (uint32_t)(padded_content[0]): %x\n", (padded_content[0]));
 		chunks[i] = padded_content + ((64 / 8) * i);
 		i++;
 	}
@@ -154,15 +156,11 @@ static uint32_t *preprocess(uint32_t *chunk)
 	printf("(debug) PREPROCESS, PHASE 2\n");
 	while (i < 64)
 	{
-		s0 = (rotateRight(w[i - 15], 7) ^ (rotateRight(w[i - 15], 18)) ^ (w[i - 15] >> 18));
+		s0 = (rotateRight(w[i - 15], 7) ^ (rotateRight(w[i - 15], 18)) ^ (w[i - 15] >> 3));
 		s1 = (rotateRight(w[i - 2], 17) ^ (rotateRight(w[i - 2], 19) ^ (w[i - 2] >> 10)));
 		w[i] = w[i - 16] + s0 + w[i - 7] + s1;
 		i++;
 	}
-	printf("(debug) chunk[i - 4]: %u\n", chunk[i - 4]);
-	printf("(debug) chunk[i - 3]: %u\n", chunk[i - 3]);
-	printf("(debug) chunk[i - 2]: %u\n", chunk[i - 2]);
-	printf("(debug) chunk[i]: %u\n", chunk[i - 1]);
 	return (w);
 }
 
@@ -224,10 +222,10 @@ void	compress(uint32_t *w)
 	while (i < 64)
 	{
 		uint32_t	s1 = rotateRight(e, 6) ^ rotateRight(e, 11) ^ rotateRight(e, 25);
-		uint32_t	ch = (e && f) ^ (!e && g);
+		uint32_t	ch = (e & f) ^ ((~e) & g);
 		uint32_t	temp1 = h + s1 + ch + g_k[i] + w[i];
 		uint32_t	s0 = rotateRight(a, 2) ^ rotateRight(a, 13) ^ rotateRight(a, 22);
-		uint32_t	maj = (a && b) ^ (a && c) ^ (b && c);
+		uint32_t	maj = (a & b) ^ (a & c) ^ (b & c);
 		uint32_t	temp2 = s0 + maj;
 
 		h = g;
@@ -312,7 +310,7 @@ char	*hash_sha256(char *message)
 	(void)message;
 	printf("(debug) g_h0: %u\n", g_h0);
 	printf("(debug) g_k[0]: %u\n", g_k[0]);
-	padded = pad("");
+	padded = pad("abc");
 	chunks = message_to_chunks(padded.content, padded.n_chunks);
 	process_chunks(chunks, padded.n_chunks, 0);
 	free(padded.content);
