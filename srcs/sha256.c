@@ -6,7 +6,7 @@
 /*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/04 10:54:27 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/06 14:26:44 by lsimon           ###   ########.fr       */
+/*   Updated: 2019/11/06 15:27:03 by lsimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,20 +25,22 @@ static uint32_t	to_big_endian (uint32_t num)
 	);
 }
 
-static uint32_t rotateRight(uint32_t num, unsigned int rotation)
-{
-    uint32_t DROPPED_LSB;
+// static uint32_t rotateRight(uint32_t num, unsigned int rotation)
+// {
+//     uint32_t DROPPED_LSB;
 
-    rotation %= UINT32_T_BITS;
-    while(rotation--)
-    {
-        DROPPED_LSB = num & 1;
-        num = (num >> 1) & (~(1 << UINT32_T_BITS));
-        num = num | (DROPPED_LSB << UINT32_T_BITS);
-	}
+//     rotation %= UINT32_T_BITS;
+//     while(rotation--)
+//     {
+//         DROPPED_LSB = num & 1;
+//         num = (num >> 1) & (~(1 << UINT32_T_BITS));
+//         num = num | (DROPPED_LSB << UINT32_T_BITS);
+// 	}
 
-    return num;
-}
+//     return num;
+// }
+
+#define ROTRIGHT(a,b) (((a) >> (b)) | ((a) << (32-(b))))
 
 /*
 **Initialize hash values:
@@ -103,16 +105,9 @@ static t_mem 	pad(char *s)
 	char_content = padded.content;
 	ft_memcpy(padded.content, s, message_len);
 	char_content[message_len] = 0x80;
-	printf("(debug) char_content: %s\n", char_content);
 
 	uint64_t_content = padded.content;
 	uint64_t_content[(padded.byte_size / 8) - 1] = (uint64_t)L;
-	printf("(debug) uint64_t_content[(padded.byte_size / 8) - 1]: %llx\n", uint64_t_content[(padded.byte_size / 8) - 1]);
-	printf("(debug) char_content[padded.byte_size - 1]: %x\n", char_content[padded.byte_size - 1]);
-	printf("(debug) char_content[padded.byte_size - 2]: %x\n", char_content[padded.byte_size - 2]);
-	printf("(debug) char_content[padded.byte_size - 3]: %x\n", char_content[padded.byte_size - 3]);
-	printf("(debug) char_content[padded.byte_size - 4]: %x\n", char_content[padded.byte_size - 4]);
-	printf("(debug) char_content: %s\n", char_content);
 	return (padded);
 }
 
@@ -124,7 +119,6 @@ static uint32_t	**message_to_chunks(uint32_t *padded_content, size_t n_chunks)
 	uint32_t	**chunks;
 	size_t		i;
 
-	printf("(debug) SPLITING INTO %zu 512 BITS CHUNKS\n", n_chunks);
 	chunks = malloc(n_chunks);
 	i = 0;
 	while (i < n_chunks)
@@ -159,20 +153,17 @@ static uint32_t *preprocess(uint32_t *chunk)
 	uint32_t	s0;
 	uint32_t	s1;
 
-	printf("(debug) create a 64-entry message schedule array w[0..63] of 32-bit words\n");
 	w = malloc(64 * sizeof(*w));
 	i = 0;
 	while (i < 16)
 	{
 		w[i] = to_big_endian(chunk[i]);
-		printf("(debug) w[%zu]: %x\n", i, w[i]);
 		i++;
 	}
-	printf("(debug) PREPROCESS, PHASE 2\n");
 	while (i < 64)
 	{
-		s0 = (rotateRight(w[i - 15], 7) ^ (rotateRight(w[i - 15], 18)) ^ (w[i - 15] >> 3));
-		s1 = (rotateRight(w[i - 2], 17) ^ (rotateRight(w[i - 2], 19) ^ (w[i - 2] >> 10)));
+		s0 = (ROTRIGHT(w[i - 15], 7) ^ (ROTRIGHT(w[i - 15], 18)) ^ (w[i - 15] >> 3));
+		s1 = (ROTRIGHT(w[i - 2], 17) ^ (ROTRIGHT(w[i - 2], 19) ^ (w[i - 2] >> 10)));
 		w[i] = w[i - 16] + s0 + w[i - 7] + s1;
 		i++;
 	}
@@ -232,14 +223,13 @@ void	compress(uint32_t *w)
 
 	size_t		i;
 
-	printf("(debug) COMPRESS\n");
 	i = 0;
 	while (i < 64)
 	{
-		uint32_t	s1 = rotateRight(e, 6) ^ rotateRight(e, 11) ^ rotateRight(e, 25);
+		uint32_t	s1 = ROTRIGHT(e, 6) ^ ROTRIGHT(e, 11) ^ ROTRIGHT(e, 25);
 		uint32_t	ch = (e & f) ^ ((~e) & g);
 		uint32_t	temp1 = h + s1 + ch + g_k[i] + w[i];
-		uint32_t	s0 = rotateRight(a, 2) ^ rotateRight(a, 13) ^ rotateRight(a, 22);
+		uint32_t	s0 = ROTRIGHT(a, 2) ^ ROTRIGHT(a, 13) ^ ROTRIGHT(a, 22);
 		uint32_t	maj = (a & b) ^ (a & c) ^ (b & c);
 		uint32_t	temp2 = s0 + maj;
 
@@ -304,14 +294,13 @@ static char	*digest(void)
 {
 	char	*hash;
 
-	printf("(debug) DIGEST\n");
-	hash = malloc(1000);
-	ft_strcpy(hash, ft_itoa_base(g_h0, 16));
-	ft_strcat(hash, ft_itoa_base(g_h1, 16));
-	ft_strcat(hash, ft_itoa_base(g_h2, 16));
-	ft_strcat(hash, ft_itoa_base(g_h3, 16));
-	ft_strcat(hash, ft_itoa_base(g_h4, 16));
-	ft_strcat(hash, ft_itoa_base(g_h5, 16));
+		hash = malloc(1000);
+		ft_strcpy(hash, ft_itoa_base(g_h0, 16));
+		ft_strcat(hash, ft_itoa_base(g_h1, 16));
+		ft_strcat(hash, ft_itoa_base(g_h2, 16));
+		ft_strcat(hash, ft_itoa_base(g_h3, 16));
+		ft_strcat(hash, ft_itoa_base(g_h4, 16));
+		ft_strcat(hash, ft_itoa_base(g_h5, 16));
 	ft_strcat(hash, ft_itoa_base(g_h6, 16));
 	ft_strcat(hash, ft_itoa_base(g_h7, 16));
 	return (hash);
@@ -322,10 +311,7 @@ char	*hash_sha256(char *message)
 	t_mem		padded;
 	uint32_t	**chunks;
 
-	(void)message;
-	printf("(debug) g_h0: %u\n", g_h0);
-	printf("(debug) g_k[0]: %u\n", g_k[0]);
-	padded = pad("abc");
+	padded = pad(message);
 	chunks = message_to_chunks(padded.content, padded.n_chunks);
 	process_chunks(chunks, padded.n_chunks, 0);
 	free(padded.content);
