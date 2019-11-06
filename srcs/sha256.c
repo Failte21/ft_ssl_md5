@@ -6,7 +6,7 @@
 /*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/04 10:54:27 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/06 11:23:52 by lsimon           ###   ########.fr       */
+/*   Updated: 2019/11/06 14:05:41 by lsimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,16 @@
 
 #define UINT32_T_SIZE sizeof(uint32_t)
 #define UINT32_T_BITS (UINT32_T_SIZE * 8 - 1)
+
+static uint32_t	to_big_endian (uint32_t num)
+{
+	return (
+		((num>>24)&0xff) | // move byte 3 to byte 0
+		((num<<8)&0xff0000) | // move byte 1 to byte 2
+		((num>>8)&0xff00) | // move byte 2 to byte 1
+		((num<<24)&0xff000000) // byte 0 to byte 3
+	);
+}
 
 static uint32_t rotateRight(uint32_t num, unsigned int rotation)
 {
@@ -75,29 +85,29 @@ static t_mem 	pad(char *s)
 {
 	uint32_t	L;
 	uint32_t	K;
-	uint32_t	i;
-	uint32_t	j;
 	t_mem		padded;
 	size_t		message_len;
+	char		*char_content;
+	uint64_t	*uint64_t_content;
 
-	printf("(debug) PADDING\n");
 	message_len = ft_strlen(s);
 	L = message_len * 8;
-	K = 512 - ((L + 1 + 64) %  512);
+	K = get_k(L);
+
 	padded.byte_size = (L + 1 + 64 + K) / 8;
 	padded.content = malloc(padded.byte_size);
+	ft_bzero(padded.content, padded.byte_size);
 	padded.n_chunks = (L + K + 64 + 1) / 512;
-	printf("(debug) L: %u\n", L);
-	printf("(debug) K: %u\n", K);
-	printf("(debug) padded.byte_size: %zu\n", padded.byte_size);
-	printf("(debug) padded.n_chunks: %zu\n", padded.n_chunks);
-	ft_memset(padded.content, 0, padded.byte_size);
-	// ft_bzero(padded.content, padded.byte_size);
+
+	
+	char_content = padded.content;
 	ft_memcpy(padded.content, s, message_len);
-	padded.content[message_len] |= 1 << 0;
-	padded.content[padded.byte_size - 2] = (uint64_t)L;
-	printf("(debug) padded.content[message_len]: %u\n", padded.content[message_len]);
-	printf("(debug) padded.content[padded.byte_size - 2]: %u\n", padded.content[padded.byte_size - 2]);
+	char_content[message_len] |= 1 << 0;
+	printf("(debug) char_content: %s\n", char_content);
+
+	uint64_t_content = padded.content;
+	uint64_t_content[(padded.byte_size / 2) - 1] = (uint64_t)L;
+	printf("(debug) char_content: %s\n", char_content);
 	return (padded);
 }
 
@@ -114,7 +124,6 @@ static uint32_t	**message_to_chunks(uint32_t *padded_content, size_t n_chunks)
 	i = 0;
 	while (i < n_chunks)
 	{
-		printf("(debug) (uint32_t)(padded_content[0]): %x\n", (padded_content[0]));
 		chunks[i] = padded_content + ((64 / 8) * i);
 		i++;
 	}
@@ -150,7 +159,8 @@ static uint32_t *preprocess(uint32_t *chunk)
 	i = 0;
 	while (i < 16)
 	{
-		w[i] = chunk[i];
+		w[i] = to_big_endian(chunk[i]);
+		printf("(debug) w[i]: %x\n", w[i]);
 		i++;
 	}
 	printf("(debug) PREPROCESS, PHASE 2\n");

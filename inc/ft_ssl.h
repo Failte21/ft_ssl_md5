@@ -6,7 +6,7 @@
 /*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/04 10:26:16 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/04 16:24:02 by lsimon           ###   ########.fr       */
+/*   Updated: 2019/11/06 13:20:43 by lsimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,13 @@ typedef struct		s_handler
 	bool		reversed;
 
 }					t_handler;
+
+typedef struct s_mem
+{
+	void	*content;
+	size_t	byte_size;
+	size_t	n_chunks;
+}				t_mem;
 
 /*
 ** Flag handler
