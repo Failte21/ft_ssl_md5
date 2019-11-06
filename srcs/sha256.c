@@ -6,7 +6,7 @@
 /*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/04 10:54:27 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/06 15:27:03 by lsimon           ###   ########.fr       */
+/*   Updated: 2019/11/06 16:43:45 by lsimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,26 +25,11 @@ static uint32_t	to_big_endian (uint32_t num)
 	);
 }
 
-// static uint32_t rotateRight(uint32_t num, unsigned int rotation)
-// {
-//     uint32_t DROPPED_LSB;
-
-//     rotation %= UINT32_T_BITS;
-//     while(rotation--)
-//     {
-//         DROPPED_LSB = num & 1;
-//         num = (num >> 1) & (~(1 << UINT32_T_BITS));
-//         num = num | (DROPPED_LSB << UINT32_T_BITS);
-// 	}
-
-//     return num;
-// }
-
 #define ROTRIGHT(a,b) (((a) >> (b)) | ((a) << (32-(b))))
 
 /*
-**Initialize hash values:
-**(first 32 bits of the fractional parts of the square roots of the first 8 primes 2..19):
+** Initialize hash values:
+** (first 32 bits of the fractional parts of the square roots of the first 8 primes 2..19):
 */
 static uint32_t	g_h0 = 0x6a09e667;
 static uint32_t	g_h1 = 0xbb67ae85;
@@ -90,7 +75,6 @@ static t_mem 	pad(char *s)
 	t_mem		padded;
 	size_t		message_len;
 	char		*char_content;
-	uint64_t	*uint64_t_content;
 
 	message_len = ft_strlen(s);
 	L = message_len * 8;
@@ -106,8 +90,16 @@ static t_mem 	pad(char *s)
 	ft_memcpy(padded.content, s, message_len);
 	char_content[message_len] = 0x80;
 
-	uint64_t_content = padded.content;
-	uint64_t_content[(padded.byte_size / 8) - 1] = (uint64_t)L;
+	uint64_t bitlen = message_len * 8;
+	char_content[padded.byte_size - 1] = bitlen;
+	char_content[padded.byte_size - 2] = bitlen >> 8;
+	char_content[padded.byte_size - 3] = bitlen >> 16;
+	char_content[padded.byte_size - 4] = bitlen >> 24;
+	char_content[padded.byte_size - 5] = bitlen >> 32;
+	char_content[padded.byte_size - 6] = bitlen >> 40;
+	char_content[padded.byte_size - 7] = bitlen >> 48;
+	char_content[padded.byte_size - 8] = bitlen >> 56;
+
 	return (padded);
 }
 
@@ -129,23 +121,6 @@ static uint32_t	**message_to_chunks(uint32_t *padded_content, size_t n_chunks)
 	return (chunks);
 }
 
-/*
-** create a 64-entry message schedule array w[0..63] of 32-bit words
-*/
-// static uint32_t	**chunk_to_words(uint32_t *chunk)
-// {
-// }
-
-/*
-** (The initial values in w[0..63] don't matter, so many implementations zero them here)
-** copy chunk into first 16 words w[0..15] of the message schedule array
-** 
-** Extend the first 16 words into the remaining 48 words w[16..63] of the message schedule array:
-** for i from 16 to 63
-**     s0 := (w[i-15] rightrotate  7) xor (w[i-15] rightrotate 18) xor (w[i-15] rightshift  3)
-**     s1 := (w[i- 2] rightrotate 17) xor (w[i- 2] rightrotate 19) xor (w[i- 2] rightshift 10)
-**     w[i] := w[i-16] + s0 + w[i-7] + s1
-*/
 static uint32_t *preprocess(uint32_t *chunk)
 {
 	uint32_t	*w;
@@ -170,46 +145,6 @@ static uint32_t *preprocess(uint32_t *chunk)
 	return (w);
 }
 
-/*
-** Initialize working variables to current hash value:
-**    a := h0
-**    b := h1
-**    c := h2
-**    d := h3
-**    e := h4
-**    f := h5
-**    g := h6
-**    h := h7
-**
-**    Compression function main loop:
-**    for i from 0 to 63
-**        S1 := (e rightrotate 6) xor (e rightrotate 11) xor (e rightrotate 25)
-**        ch := (e and f) xor ((not e) and g)
-**        temp1 := h + S1 + ch + k[i] + w[i]
-**        S0 := (a rightrotate 2) xor (a rightrotate 13) xor (a rightrotate 22)
-**        maj := (a and b) xor (a and c) xor (b and c)
-**        temp2 := S0 + maj
-** 
-**        h := g
-**        g := f
-**        f := e
-**        e := d + temp1
-**        d := c
-**        c := b
-**        b := a
-**        a := temp1 + temp2
-**
-**    Add the compressed chunk to the current hash value:
-**    h0 := h0 + a
-**    h1 := h1 + b
-**    h2 := h2 + c
-**    h3 := h3 + d
-**    h4 := h4 + e
-**    h5 := h5 + f
-**    h6 := h6 + g
-**    h7 := h7 + h
-**
-*/
 void	compress(uint32_t *w)
 {
 	uint32_t	a = g_h0;
@@ -294,13 +229,13 @@ static char	*digest(void)
 {
 	char	*hash;
 
-		hash = malloc(1000);
-		ft_strcpy(hash, ft_itoa_base(g_h0, 16));
-		ft_strcat(hash, ft_itoa_base(g_h1, 16));
-		ft_strcat(hash, ft_itoa_base(g_h2, 16));
-		ft_strcat(hash, ft_itoa_base(g_h3, 16));
-		ft_strcat(hash, ft_itoa_base(g_h4, 16));
-		ft_strcat(hash, ft_itoa_base(g_h5, 16));
+	hash = malloc(1000);
+	ft_strcpy(hash, ft_itoa_base(g_h0, 16));
+	ft_strcat(hash, ft_itoa_base(g_h1, 16));
+	ft_strcat(hash, ft_itoa_base(g_h2, 16));
+	ft_strcat(hash, ft_itoa_base(g_h3, 16));
+	ft_strcat(hash, ft_itoa_base(g_h4, 16));
+	ft_strcat(hash, ft_itoa_base(g_h5, 16));
 	ft_strcat(hash, ft_itoa_base(g_h6, 16));
 	ft_strcat(hash, ft_itoa_base(g_h7, 16));
 	return (hash);
