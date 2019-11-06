@@ -1,31 +1,4 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   sha256.c                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/04 10:54:27 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/06 16:43:45 by lsimon           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../inc/ft_ssl.h"
-
-#define UINT32_T_SIZE sizeof(uint32_t)
-#define UINT32_T_BITS (UINT32_T_SIZE * 8 - 1)
-
-static uint32_t	to_big_endian (uint32_t num)
-{
-	return (
-		((num>>24)&0xff) | // move byte 3 to byte 0
-		((num<<8)&0xff0000) | // move byte 1 to byte 2
-		((num>>8)&0xff00) | // move byte 2 to byte 1
-		((num<<24)&0xff000000) // byte 0 to byte 3
-	);
-}
-
-#define ROTRIGHT(a,b) (((a) >> (b)) | ((a) << (32-(b))))
 
 /*
 ** Initialize hash values:
@@ -103,24 +76,6 @@ static t_mem 	pad(char *s)
 	return (padded);
 }
 
-/*
-** break message into 512-bit chunks
-*/
-static uint32_t	**message_to_chunks(uint32_t *padded_content, size_t n_chunks)
-{
-	uint32_t	**chunks;
-	size_t		i;
-
-	chunks = malloc(n_chunks);
-	i = 0;
-	while (i < n_chunks)
-	{
-		chunks[i] = padded_content + ((64 / 8) * i);
-		i++;
-	}
-	return (chunks);
-}
-
 static uint32_t *preprocess(uint32_t *chunk)
 {
 	uint32_t	*w;
@@ -137,15 +92,15 @@ static uint32_t *preprocess(uint32_t *chunk)
 	}
 	while (i < 64)
 	{
-		s0 = (ROTRIGHT(w[i - 15], 7) ^ (ROTRIGHT(w[i - 15], 18)) ^ (w[i - 15] >> 3));
-		s1 = (ROTRIGHT(w[i - 2], 17) ^ (ROTRIGHT(w[i - 2], 19) ^ (w[i - 2] >> 10)));
+		s0 = (rot_right(w[i - 15], 7) ^ (rot_right(w[i - 15], 18)) ^ (w[i - 15] >> 3));
+		s1 = (rot_right(w[i - 2], 17) ^ (rot_right(w[i - 2], 19) ^ (w[i - 2] >> 10)));
 		w[i] = w[i - 16] + s0 + w[i - 7] + s1;
 		i++;
 	}
 	return (w);
 }
 
-void	compress(uint32_t *w)
+static void		compress(uint32_t *w)
 {
 	uint32_t	a = g_h0;
 	uint32_t	b = g_h1;
@@ -161,10 +116,10 @@ void	compress(uint32_t *w)
 	i = 0;
 	while (i < 64)
 	{
-		uint32_t	s1 = ROTRIGHT(e, 6) ^ ROTRIGHT(e, 11) ^ ROTRIGHT(e, 25);
+		uint32_t	s1 = rot_right(e, 6) ^ rot_right(e, 11) ^ rot_right(e, 25);
 		uint32_t	ch = (e & f) ^ ((~e) & g);
 		uint32_t	temp1 = h + s1 + ch + g_k[i] + w[i];
-		uint32_t	s0 = ROTRIGHT(a, 2) ^ ROTRIGHT(a, 13) ^ ROTRIGHT(a, 22);
+		uint32_t	s0 = rot_right(a, 2) ^ rot_right(a, 13) ^ rot_right(a, 22);
 		uint32_t	maj = (a & b) ^ (a & c) ^ (b & c);
 		uint32_t	temp2 = s0 + maj;
 
@@ -188,7 +143,7 @@ void	compress(uint32_t *w)
 	g_h7 = g_h7 + h;
 }
 
-void	process_chunks(uint32_t **chunks, size_t n_chunks, size_t i)
+static void		process_chunks(uint32_t **chunks, size_t n_chunks, size_t i)
 {
 	uint32_t	*w;
 
@@ -199,49 +154,26 @@ void	process_chunks(uint32_t **chunks, size_t n_chunks, size_t i)
 	process_chunks(chunks, n_chunks, i + 1);
 }
 
-static char	*ft_itoa_base_aux(unsigned int n, unsigned int base, const char *base_s, char *acc)
-{
-	char			*s;
-
-	s = malloc(ft_strlen(acc) + 1);
-	ft_bzero(s, ft_strlen(acc) + 1);
-	s[0] = base_s[n % base];
-	ft_strcat(s, acc);
-	free(acc);
-	if (n < base)
-		return (s);
-	else
-		return (ft_itoa_base_aux(n / base, base, base_s, s));
-}
-
-char		*ft_itoa_base(unsigned int n, unsigned int base)
-{
-	char		*s;
-
-	s = ft_itoa_base_aux(n, base, "0123456789abcdef", ft_strdup(""));
-	return (s);
-}
 /*
 ** Produce the final hash value (big-endian):
-** digest := hash := h0 append h1 append h2 append h3 append h4 append h5 append h6 append h7
 */
-static char	*digest(void)
+static char		*digest(void)
 {
 	char	*hash;
 
 	hash = malloc(1000);
-	ft_strcpy(hash, ft_itoa_base(g_h0, 16));
-	ft_strcat(hash, ft_itoa_base(g_h1, 16));
-	ft_strcat(hash, ft_itoa_base(g_h2, 16));
-	ft_strcat(hash, ft_itoa_base(g_h3, 16));
-	ft_strcat(hash, ft_itoa_base(g_h4, 16));
-	ft_strcat(hash, ft_itoa_base(g_h5, 16));
-	ft_strcat(hash, ft_itoa_base(g_h6, 16));
-	ft_strcat(hash, ft_itoa_base(g_h7, 16));
+	ft_strcpy(hash, ft_itoa_base_u(g_h0, 16));
+	ft_strcat(hash, ft_itoa_base_u(g_h1, 16));
+	ft_strcat(hash, ft_itoa_base_u(g_h2, 16));
+	ft_strcat(hash, ft_itoa_base_u(g_h3, 16));
+	ft_strcat(hash, ft_itoa_base_u(g_h4, 16));
+	ft_strcat(hash, ft_itoa_base_u(g_h5, 16));
+	ft_strcat(hash, ft_itoa_base_u(g_h6, 16));
+	ft_strcat(hash, ft_itoa_base_u(g_h7, 16));
 	return (hash);
 }
 
-char	*hash_sha256(char *message)
+char			*hash_sha256(char *message)
 {
 	t_mem		padded;
 	uint32_t	**chunks;
