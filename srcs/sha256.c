@@ -6,7 +6,7 @@
 /*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/04 10:54:27 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/05 19:54:03 by lsimon           ###   ########.fr       */
+/*   Updated: 2019/11/06 10:25:11 by lsimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,37 +62,41 @@ static unsigned int	g_k[] =
 ** append K '0' bits, where K is the minimum number >= 0 such that L + 1 + K + 64 is a multiple of 512
 ** append L as a 64-bit big-endian integer, making the total post-processed length a multiple of 512 bits
 */
-static t_mem pad(char *s)
+
+static uint32_t	get_k(uint32_t L)
+{
+	uint32_t	mod;
+
+	mod = ((L + 1 + 64) %  512);
+	return (mod == 0 ? 0 : 512 - mod);
+}
+
+static t_mem 	pad(char *s)
 {
 	uint32_t	L;
 	uint32_t	K;
-	uint32_t	*to_add;
 	uint32_t	i;
 	uint32_t	j;
 	t_mem		padded;
+	size_t		message_len;
 
 	printf("(debug) PADDING\n");
-	L = ft_strlen(s) * 8;
-	K = 512 - ((L + 1 + 64) % 512);
+	message_len = ft_strlen(s);
+	L = message_len * 8;
+	K = 512 - ((L + 1 + 64) %  512);
+	padded.byte_size = (L + 1 + 64 + K) / 8;
+	padded.content = malloc(padded.byte_size);
+	padded.n_chunks = (L + K + 64 + 1) / 512;
 	printf("(debug) L: %u\n", L);
 	printf("(debug) K: %u\n", K);
-	to_add = malloc((K / 8) * sizeof(K) + 1 + (64 / 8));
-	to_add[0] |= 1 << 0;
-	i = 1;
-	while (i < K)
-	{
-		j = i / 64;
-		to_add[j] |= 0 << i;
-		i++;
-	}
-	to_add[i] = (uint64_t)L;
-	padded.content = malloc(((L + K) / 8) * sizeof(K) + 1);
-	printf("(debug) (uint64_t)L: %llu\n", (uint64_t)L);
-	memcpy(padded.content, s, (L / 8));
-	memcpy(padded.content + (L / 8), to_add, (K / 8) * sizeof(K) + 1);
-	free(to_add);
-	padded.n_chunks = (L + K + 64 + 1) / 512;
+	printf("(debug) padded.byte_size: %zu\n", padded.byte_size);
 	printf("(debug) padded.n_chunks: %zu\n", padded.n_chunks);
+	ft_bzero(padded.content, padded.byte_size);
+	ft_memcpy(padded.content, s, message_len);
+	padded.content[message_len] = 1;
+	padded.content[padded.byte_size - 2] = (uint64_t)L;
+	printf("(debug) padded.content[message_len]: %u\n", padded.content[message_len]);
+	printf("(debug) padded.content[padded.byte_size - 2]: %u\n", padded.content[padded.byte_size - 2]);
 	return (padded);
 }
 
@@ -109,7 +113,7 @@ static uint32_t	**message_to_chunks(uint32_t *padded_content, size_t n_chunks)
 	i = 0;
 	while (i < n_chunks)
 	{
-		chunks[i] = padded_content + (64 * i);
+		chunks[i] = padded_content + ((64 / 8) * i);
 		i++;
 	}
 	return (chunks);
@@ -140,7 +144,7 @@ static uint32_t *preprocess(uint32_t *chunk)
 	uint32_t	s1;
 
 	printf("(debug) create a 64-entry message schedule array w[0..63] of 32-bit words\n");
-	w = malloc(64);
+	w = malloc(64 * sizeof(*w));
 	i = 0;
 	while (i < 16)
 	{
