@@ -6,7 +6,7 @@
 /*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/04 10:54:27 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/06 14:05:41 by lsimon           ###   ########.fr       */
+/*   Updated: 2019/11/06 14:26:44 by lsimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,11 +102,16 @@ static t_mem 	pad(char *s)
 	
 	char_content = padded.content;
 	ft_memcpy(padded.content, s, message_len);
-	char_content[message_len] |= 1 << 0;
+	char_content[message_len] = 0x80;
 	printf("(debug) char_content: %s\n", char_content);
 
 	uint64_t_content = padded.content;
-	uint64_t_content[(padded.byte_size / 2) - 1] = (uint64_t)L;
+	uint64_t_content[(padded.byte_size / 8) - 1] = (uint64_t)L;
+	printf("(debug) uint64_t_content[(padded.byte_size / 8) - 1]: %llx\n", uint64_t_content[(padded.byte_size / 8) - 1]);
+	printf("(debug) char_content[padded.byte_size - 1]: %x\n", char_content[padded.byte_size - 1]);
+	printf("(debug) char_content[padded.byte_size - 2]: %x\n", char_content[padded.byte_size - 2]);
+	printf("(debug) char_content[padded.byte_size - 3]: %x\n", char_content[padded.byte_size - 3]);
+	printf("(debug) char_content[padded.byte_size - 4]: %x\n", char_content[padded.byte_size - 4]);
 	printf("(debug) char_content: %s\n", char_content);
 	return (padded);
 }
@@ -160,7 +165,7 @@ static uint32_t *preprocess(uint32_t *chunk)
 	while (i < 16)
 	{
 		w[i] = to_big_endian(chunk[i]);
-		printf("(debug) w[i]: %x\n", w[i]);
+		printf("(debug) w[%zu]: %x\n", i, w[i]);
 		i++;
 	}
 	printf("(debug) PREPROCESS, PHASE 2\n");
