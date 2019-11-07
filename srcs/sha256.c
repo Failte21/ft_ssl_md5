@@ -155,6 +155,22 @@ static void		process_chunks(uint32_t **chunks, size_t n_chunks, size_t i)
 }
 
 /*
+** Hacky way to append potentially missing 0s
+*/
+static char		*adjust(char *hash)
+{
+	unsigned int	to_add;
+	char			*adjusted;
+
+	to_add = 64 - ft_strlen(hash);
+	adjusted = malloc(65);
+	ft_memset(adjusted, '0', to_add);
+	ft_strcpy(adjusted + to_add, hash);
+	free(hash);
+	return (adjusted);
+}
+
+/*
 ** Produce the final hash value (big-endian):
 */
 static char		*digest(void)
@@ -170,7 +186,7 @@ static char		*digest(void)
 	ft_strcat(hash, ft_itoa_base_u(g_h5, 16));
 	ft_strcat(hash, ft_itoa_base_u(g_h6, 16));
 	ft_strcat(hash, ft_itoa_base_u(g_h7, 16));
-	return (hash);
+	return (adjust(hash));
 }
 
 char			*hash_sha256(char *message)
