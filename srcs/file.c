@@ -8,7 +8,10 @@ char			*handle_file(char *filepath)
 	fd = open(filepath, O_RDONLY);
 	if (fd == -1)
 	{
-		printf("(debug): open error %s\n", strerror(errno));
+		ft_putstr_fd(filepath, 1);
+		ft_putstr_fd(": ", 1);
+		ft_putstr_fd(strerror(errno), 1);
+		ft_putchar_fd('\n', 1);
 		return (NULL);
 	}
 	if ((to_hash = get_content(fd)) == NULL)

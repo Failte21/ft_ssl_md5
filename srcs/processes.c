@@ -3,10 +3,7 @@
 static t_parse_msg_fn	get_msg_fn_aux(t_type type, unsigned int i)
 {
 	if (g_parser_handlers[i].type == type)
-	{
-		printf("(debug) parse function found\n");
 		return (g_parser_handlers[i].parse_fn);
-	}
 	return (get_msg_fn_aux(type, i + 1));
 }
 
@@ -43,11 +40,10 @@ void					run_processes(t_handler *handler, t_process *head)
 	if (head == NULL)
 		return ;
 	to_hash = head->parse_msg_fn(head->input);
-	printf("(debug) to_hash: %s\n", to_hash);
 	if (to_hash != NULL)
 	{
 		hashed = handler->hash_fn(to_hash);
-		display(handler, head, hashed);
+		display(handler, head, hashed, to_hash);
 	}
 	run_processes(handler, head->next);
 }

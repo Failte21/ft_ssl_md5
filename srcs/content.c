@@ -6,7 +6,7 @@
 /*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/04 16:04:49 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/07 16:32:56 by lsimon           ###   ########.fr       */
+/*   Updated: 2019/11/07 17:36:53 by lsimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,5 +42,6 @@ char				*get_content(int fd)
 char					*handle_stdin(char *s)
 {
 	(void)s;
-	return (get_content(0));
+	char *content = get_content(0);
+	return (content);
 }

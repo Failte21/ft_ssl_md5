@@ -35,13 +35,12 @@ static int			handle_flags_aux(t_handler *h, char **args, unsigned int i)
 		}
 		return (handle_flags_aux(h, args, i + 1));
 	}
-	handle_files(h, args + 1);
+	handle_files(h, args + i);
 	return (0);
 }
 
 int					handle_flags(t_handler *handler, char **args)
 {
-	printf("(debug) handle flags\n");
 	return (handle_flags_aux(handler, args, 0));
 }
 

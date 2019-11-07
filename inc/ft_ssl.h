@@ -112,7 +112,7 @@ void					run_processes(t_handler *handler, t_process *head);
 
 void					handle_files(t_handler *handler, char **filespath);
 
-void					display(t_handler *handler, t_process *process, char *hashed);
+void					display(t_handler *h, t_process *p, char *ha, char *th);
 
 static t_hash_handler	g_hash_table[] =
 {
