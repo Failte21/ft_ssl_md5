@@ -2,3 +2,8 @@ ft_ssl
 *.o
 *.a
 libft.h.gch
+
+
+# tests
+mine.txt
+real.txt

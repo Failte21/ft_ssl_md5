@@ -52,7 +52,14 @@ static char	*ft_itoa_base_u_aux(unsigned int n, unsigned int base, char *acc)
 char		*ft_itoa_base_u(unsigned int n, unsigned int base)
 {
 	char		*s;
+	char		*adjusted;
+	size_t		to_add;
 
 	s = ft_itoa_base_u_aux(n, base, ft_strdup(""));
-	return (s);
+	to_add = 8 - ft_strlen(s);
+	adjusted = malloc(8);
+	ft_memset(adjusted, '0', to_add);
+	ft_strcpy(adjusted + to_add, s);
+	free(s);
+	return (adjusted);
 }
