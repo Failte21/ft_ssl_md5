@@ -8,6 +8,7 @@ char			*handle_file(char *filepath)
 	fd = open(filepath, O_RDONLY);
 	if (fd == -1)
 	{
+		ft_putstr_fd("ft_ssl: ", 1);
 		ft_putstr_fd(filepath, 1);
 		ft_putstr_fd(": ", 1);
 		ft_putstr_fd(strerror(errno), 1);

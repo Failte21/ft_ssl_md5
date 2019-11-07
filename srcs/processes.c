@@ -32,6 +32,15 @@ t_process				*push_process(t_process *head, char *input, t_type type)
 	return (head);
 }
 
+t_process				*prepend_process(t_process *head, char *input, t_type type)
+{
+	t_process	*process;
+
+	process = init_process(input, type);
+	process->next = head;
+	return (process);
+}
+
 void					run_processes(t_handler *handler, t_process *head)
 {
 	char	*hashed;

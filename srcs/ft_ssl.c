@@ -6,7 +6,7 @@
 /*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/04 10:22:26 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/07 17:12:12 by lsimon           ###   ########.fr       */
+/*   Updated: 2019/11/07 18:17:47 by lsimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int					main(int ac, char **av)
 		return (-1);
 	}
 	if (ac == 2 || h->processes == NULL || h->verbose)
-		h->processes = push_process(h->processes, NULL, H_STDIN);
+		h->processes = prepend_process(h->processes, NULL, H_STDIN);
 	if (h->processes == NULL)
 	{
 		free(h);
