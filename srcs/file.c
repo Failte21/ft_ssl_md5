@@ -27,6 +27,7 @@ int			handle_file(t_handler *handler, char **args)
 	{
 		if (handler->to_hash != NULL)
 		{
+			// printf("(debug) handler->to_hash: %s\n", handler->to_hash);
 			printf("(debug) conflict s flag and file\n");
 			return (-1);
 		}

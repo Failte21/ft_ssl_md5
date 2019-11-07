@@ -28,10 +28,10 @@ typedef struct			s_handler
 	char		*hash_name;
 	char		*flags;
 	char		*to_hash;
+	char		*filename;
 	bool		quiet;
 	bool		verbose;
 	bool		reversed;
-	char		*filename;
 
 }						t_handler;
 
