@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   display.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/04 16:13:13 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/04 16:13:46 by lsimon           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../inc/ft_ssl.h"
 
 static void	print_rev(char *s)
@@ -19,17 +7,34 @@ static void	print_rev(char *s)
 	i = ft_strlen(s) - 1;
 	while (i >= 0)
 	{
-		write(0, &(s[i]), 1);
+		write(1, &(s[i]), 1);
 		i--;
+	}
+}
+
+static void	s_to_upper(char *s)
+{
+	unsigned int i;
+
+	i = 0;
+	while (s[i] != '\0')
+	{
+		s[i] = ft_toupper(s[i]);
+		i++;
 	}
 }
 
 void		display(t_handler *handler, char *hashed)
 {
 	if (handler->verbose && !handler->quiet)
-	{
 		ft_putstr(handler->to_hash);
-		ft_putchar('\n');
+	if (handler->filename != NULL)
+	{
+		s_to_upper(handler->hash_name);
+		ft_putstr(handler->hash_name);
+		ft_putstr(" (");
+		ft_putstr(handler->filename);
+		ft_putstr(") = ");
 	}
 	if (handler->reversed)
 		print_rev(hashed);

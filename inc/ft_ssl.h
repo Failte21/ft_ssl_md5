@@ -25,11 +25,13 @@ typedef struct			s_hash_handler
 typedef struct			s_handler
 {
 	t_hash_fn	hash_fn;
+	char		*hash_name;
 	char		*flags;
 	char		*to_hash;
 	bool		quiet;
 	bool		verbose;
 	bool		reversed;
+	char		*filename;
 
 }						t_handler;
 

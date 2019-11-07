@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   file.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/04 16:07:18 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/04 16:08:06 by lsimon           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../inc/ft_ssl.h"
 
 static int	get_file_content(t_handler *handler, char *filepath)
@@ -18,6 +6,7 @@ static int	get_file_content(t_handler *handler, char *filepath)
 	char	*to_hash;
 
 	fd = open(filepath, O_RDONLY);
+	handler->filename = filepath;
 	if (fd == -1)
 	{
 		printf("(debug): open error %s\n", strerror(errno));
@@ -28,7 +17,6 @@ static int	get_file_content(t_handler *handler, char *filepath)
 		printf("(debug) error while reading the file\n");
 		return (-1);
 	}
-	printf("(debug) FILE CONTENT: to_hash: %s\n", to_hash);
 	handler->to_hash = to_hash;
 	return (0);
 }
