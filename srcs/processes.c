@@ -19,8 +19,8 @@ static t_process		*init_process(char *input, t_type type)
 {
 	t_process	*process;
 
-	printf("(debug) input: %s\n", input);
 	process = malloc(sizeof(t_process));
+	process->type = type;
 	process->input = input;
 	process->parse_msg_fn = get_msg_fn(type);
 	process->next = NULL;
@@ -47,7 +47,7 @@ void					run_processes(t_handler *handler, t_process *head)
 	if (to_hash != NULL)
 	{
 		hashed = handler->hash_fn(to_hash);
-		display(handler, hashed);
+		display(handler, head, hashed);
 	}
 	run_processes(handler, head->next);
 }

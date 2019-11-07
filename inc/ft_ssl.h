@@ -32,6 +32,7 @@ typedef enum	e_type
 
 typedef struct			s_process
 {
+	t_type				type;
 	t_parse_msg_fn		parse_msg_fn;
 	char				*input;
 	struct s_process	*next;
@@ -111,7 +112,7 @@ void					run_processes(t_handler *handler, t_process *head);
 
 void					handle_files(t_handler *handler, char **filespath);
 
-void					display(t_handler *handler, char *hashed);
+void					display(t_handler *handler, t_process *process, char *hashed);
 
 static t_hash_handler	g_hash_table[] =
 {

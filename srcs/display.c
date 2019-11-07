@@ -1,16 +1,16 @@
 #include "../inc/ft_ssl.h"
 
-static void	print_rev(char *s)
-{
-	int	i;
+// static void	print_rev(char *s)
+// {
+// 	int	i;
 
-	i = ft_strlen(s) - 1;
-	while (i >= 0)
-	{
-		write(1, &(s[i]), 1);
-		i--;
-	}
-}
+// 	i = ft_strlen(s) - 1;
+// 	while (i >= 0)
+// 	{
+// 		write(1, &(s[i]), 1);
+// 		i--;
+// 	}
+// }
 
 static void	s_to_upper(char *s)
 {
@@ -24,7 +24,7 @@ static void	s_to_upper(char *s)
 	}
 }
 
-static void	display_filename(t_handler *handler)
+static void	display_filename(t_handler *handler, char *filename)
 {
 	if (!handler->reversed)
 	{
@@ -34,22 +34,19 @@ static void	display_filename(t_handler *handler)
 	}
 	else
 		ft_putchar(' ');
-	ft_putstr(handler->filename);
+	ft_putstr(filename);
 	if (!handler->reversed)
 		ft_putstr(") = ");
 }
 
-void		display(t_handler *handler, char *hashed)
+void		display(t_handler *handler, t_process *process, char *hashed)
 {
-	if (handler->verbose && !handler->quiet)
-		ft_putstr(handler->to_hash);
-	if (handler->filename != NULL && !handler->reversed)
-		display_filename(handler);
-	if (handler->reversed)
-		print_rev(hashed);
-	else
-		ft_putstr(hashed);
-	if (handler->filename != NULL && handler->reversed)
-		display_filename(handler);
+	if (handler->verbose)
+		ft_putstr(process->input);
+	if (process->type == H_FILE && !handler->reversed)
+		display_filename(handler, process->input);
+	ft_putstr(hashed);
+	if (process->type == H_FILE && handler->reversed)
+		display_filename(handler, process->input);
 	ft_putchar('\n');
 }
