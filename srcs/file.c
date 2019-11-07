@@ -1,42 +1,33 @@
 #include "../inc/ft_ssl.h"
 
-static int	get_file_content(t_handler *handler, char *filepath)
+char			*handle_file(char *filepath)
 {
 	int		fd;
 	char	*to_hash;
 
 	fd = open(filepath, O_RDONLY);
-	handler->filename = filepath;
 	if (fd == -1)
 	{
 		printf("(debug): open error %s\n", strerror(errno));
-		return (-1);
+		return (NULL);
 	}
 	if ((to_hash = get_content(fd)) == NULL)
 	{
 		printf("(debug) error while reading the file\n");
-		return (-1);
+		return (NULL);
 	}
-	handler->to_hash = to_hash;
-	return (0);
+	return (to_hash);
 }
 
-int			handle_file(t_handler *handler, char **args)
+void			handle_files_aux(t_handler *handler, char **filespath, unsigned int i)
 {
-	if (*args != NULL)
-	{
-		if (handler->to_hash != NULL)
-		{
-			// printf("(debug) handler->to_hash: %s\n", handler->to_hash);
-			printf("(debug) conflict s flag and file\n");
-			return (-1);
-		}
-		if (*(args + 1) != NULL)
-		{
-			printf("(debug) Error too many args\n");
-			return (-1);
-		}
-		return (get_file_content(handler, *args));
-	}
-	return (0);
+	if (filespath[i] == NULL)
+		return ;
+	handler->processes = push_process(handler->processes, filespath[i], H_FILE);
+	handle_files_aux(handler, filespath, i + 1);
+}
+
+void			handle_files(t_handler *handler, char **filespath)
+{
+	handle_files_aux(handler, filespath, 0);
 }

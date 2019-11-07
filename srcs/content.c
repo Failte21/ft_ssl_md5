@@ -6,7 +6,7 @@
 /*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/04 16:04:49 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/07 11:24:18 by lsimon           ###   ########.fr       */
+/*   Updated: 2019/11/07 16:32:56 by lsimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,4 +37,10 @@ char				*get_content(int fd)
 	}
 	len = ft_strlen(to_hash) - 1;
 	return (to_hash);
+}
+
+char					*handle_stdin(char *s)
+{
+	(void)s;
+	return (get_content(0));
 }
