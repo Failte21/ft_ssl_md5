@@ -162,14 +162,14 @@ static char		*digest(void)
 	char	*hash;
 
 	hash = malloc(1000);
-	ft_strcpy(hash, ft_itoa_base_u(g_h0, 16));
-	ft_strcat(hash, ft_itoa_base_u(g_h1, 16));
-	ft_strcat(hash, ft_itoa_base_u(g_h2, 16));
-	ft_strcat(hash, ft_itoa_base_u(g_h3, 16));
-	ft_strcat(hash, ft_itoa_base_u(g_h4, 16));
-	ft_strcat(hash, ft_itoa_base_u(g_h5, 16));
-	ft_strcat(hash, ft_itoa_base_u(g_h6, 16));
-	ft_strcat(hash, ft_itoa_base_u(g_h7, 16));
+	ft_strcpy(hash, ft_itoa_hex_u_fixed(g_h0));
+	ft_strcat(hash, ft_itoa_hex_u_fixed(g_h1));
+	ft_strcat(hash, ft_itoa_hex_u_fixed(g_h2));
+	ft_strcat(hash, ft_itoa_hex_u_fixed(g_h3));
+	ft_strcat(hash, ft_itoa_hex_u_fixed(g_h4));
+	ft_strcat(hash, ft_itoa_hex_u_fixed(g_h5));
+	ft_strcat(hash, ft_itoa_hex_u_fixed(g_h6));
+	ft_strcat(hash, ft_itoa_hex_u_fixed(g_h7));
 	return (hash);
 }
 

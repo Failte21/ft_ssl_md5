@@ -52,10 +52,18 @@ static char	*ft_itoa_base_u_aux(unsigned int n, unsigned int base, char *acc)
 char		*ft_itoa_base_u(unsigned int n, unsigned int base)
 {
 	char		*s;
+
+	s = ft_itoa_base_u_aux(n, base, ft_strdup(""));
+	return (s);
+}
+
+char		*ft_itoa_hex_u_fixed(unsigned int n)
+{
+	char		*s;
 	char		*adjusted;
 	size_t		to_add;
 
-	s = ft_itoa_base_u_aux(n, base, ft_strdup(""));
+	s = ft_itoa_base_u(n, 16);
 	to_add = 8 - ft_strlen(s);
 	adjusted = malloc(8);
 	ft_memset(adjusted, '0', to_add);

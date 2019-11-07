@@ -75,6 +75,7 @@ t_hash_fn				get_hash_fn(char *hash);
 ** Utils
 */
 char					*ft_itoa_base_u(unsigned int n, unsigned int base);
+char					*ft_itoa_hex_u_fixed(unsigned int n);
 uint32_t				to_big_endian (uint32_t num);
 uint32_t				rot_right(uint32_t a, size_t b);
 uint32_t				**message_to_chunks(uint32_t *content, size_t n_chunks);
