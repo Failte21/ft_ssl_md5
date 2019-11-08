@@ -18,7 +18,7 @@ uint32_t	**message_to_chunks(uint32_t *content, size_t n_chunks)
 	i = 0;
 	while (i < n_chunks)
 	{
-		chunks[i] = content + ((64 / 8) * i);
+		chunks[i] = content + (16 * i);
 		i++;
 	}
 	return (chunks);
