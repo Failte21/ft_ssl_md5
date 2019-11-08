@@ -123,14 +123,12 @@ void					handle_files(t_handler *handler, char **filespath);
 
 void					display(t_handler *h, t_process *p, char *ha, char *th);
 
-
 /*
 ** Usage
 */
 void					arg_missing(void);
 void					arg_invalid_command(char *command);
 void					available_commands(void);
-
 
 static t_hash_handler	g_hash_table[] =
 {
