@@ -6,7 +6,10 @@ int					main(int ac, char **av)
 
 	h = init_handler(ac, av);
 	if (h == NULL)
+	{
+		available_commands();
 		return (1);
+	}
 	if (handle_flags(h, av + 2) == -1)
 	{
 		free(h);

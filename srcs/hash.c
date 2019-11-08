@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   hash.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/04 16:23:05 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/07 17:11:37 by lsimon           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../inc/ft_ssl.h"
 
 static t_hash_fn	get_hash_fn_aux(char *hash, unsigned int i)
@@ -27,10 +15,10 @@ t_hash_fn			get_hash_fn(char *hash)
 
 	if (hash == NULL)
 	{
-		printf("(debug) Missing hash argument\n");
+		arg_missing();
 		return (NULL);
 	}
 	if ((hash_fn = (get_hash_fn_aux(hash, 0))) == NULL)
-		printf("(debug) Invalid hash argument\n");
+		arg_invalid_command(hash);
 	return (hash_fn);
 }

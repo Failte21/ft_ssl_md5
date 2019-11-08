@@ -16,10 +16,7 @@ char			*handle_file(char *filepath)
 		return (NULL);
 	}
 	if ((to_hash = get_content(fd)) == NULL)
-	{
-		printf("(debug) error while reading the file\n");
 		return (NULL);
-	}
 	return (to_hash);
 }
 

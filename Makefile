@@ -1,15 +1,3 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2018/10/17 11:11:59 by lsimon            #+#    #+#              #
-#    Updated: 2019/11/07 17:21:48 by lsimon           ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
 CC = gcc
 
 CFLAGS =
@@ -32,6 +20,8 @@ SRC_NAMES += string.c
 SRC_NAMES += hash.c
 SRC_NAMES += hash_utils.c
 SRC_NAMES += processes.c
+SRC_NAMES += sha_utils.c
+SRC_NAMES += usage.c
 
 SRCS = $(addprefix $(SRCS_DIR)/, $(NM_SRC_NAMES))
 

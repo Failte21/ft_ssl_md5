@@ -17,10 +17,18 @@
 typedef char			*(*t_hash_fn)(char *);
 typedef char			*(*t_parse_msg_fn)(char *);
 
+typedef enum	e_command_type
+{
+	C_STANDARD,
+	C_CIPHER,
+	C_MDIGEST
+}				t_command_type;
+
 typedef struct			s_hash_handler
 {
-	char		*hash;
-	t_hash_fn	hash_fn;
+	char			*hash;
+	t_hash_fn		hash_fn;
+	t_command_type	type;
 }						t_hash_handler;
 
 typedef enum	e_type
@@ -115,11 +123,20 @@ void					handle_files(t_handler *handler, char **filespath);
 
 void					display(t_handler *h, t_process *p, char *ha, char *th);
 
+
+/*
+** Usage
+*/
+void					arg_missing(void);
+void					arg_invalid_command(char *command);
+void					available_commands(void);
+
+
 static t_hash_handler	g_hash_table[] =
 {
-	{ "md5", hash_md5 },
-	{ "sha256", hash_sha256 },
-	{ NULL, NULL },
+	{ "md5", hash_md5, C_MDIGEST },
+	{ "sha256", hash_sha256, C_MDIGEST },
+	{ NULL, NULL, 0 },
 };
 
 static t_flag_handler	g_flag_handlers[] =
