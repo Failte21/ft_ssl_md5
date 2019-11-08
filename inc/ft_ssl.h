@@ -108,7 +108,7 @@ uint32_t				**message_to_chunks(uint32_t *content, size_t n_chunks);
 ** Processes
 */
 t_process				*push_process(t_process *h, char *input, t_type type);
-t_process				*prepend_process(t_process *h, char *input, t_type type);
+t_process				*prepend_process(t_process *h, char *i, t_type type);
 void					run_processes(t_handler *handler, t_process *head);
 
 void					handle_files(t_handler *handler, char **filespath);

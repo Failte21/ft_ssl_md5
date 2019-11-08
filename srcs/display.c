@@ -22,9 +22,11 @@ static void	display_input(t_handler *handler, char *input, bool with_brackets)
 	}
 	else
 		ft_putchar(' ');
-	if (with_brackets) ft_putchar('\"');
+	if (with_brackets)
+		ft_putchar('\"');
 	ft_putstr(input);
-	if (with_brackets) ft_putchar('\"');
+	if (with_brackets)
+		ft_putchar('\"');
 	if (!handler->reversed)
 		ft_putstr(") = ");
 }
@@ -44,7 +46,5 @@ void		display(t_handler *h, t_process *p, char *ha, char *th)
 		if (h->reversed)
 			display_input(h, p->input, p->type == H_STRING);
 	}
-	// if (process->type == H_FILE && handler->reversed)
-	// 	display_filename(handler, process->input);
 	ft_putchar('\n');
 }

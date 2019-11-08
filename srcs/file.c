@@ -23,12 +23,12 @@ char			*handle_file(char *filepath)
 	return (to_hash);
 }
 
-void			handle_files_aux(t_handler *handler, char **filespath, unsigned int i)
+void			handle_files_aux(t_handler *h, char **filespath, unsigned int i)
 {
 	if (filespath[i] == NULL)
 		return ;
-	handler->processes = push_process(handler->processes, filespath[i], H_FILE);
-	handle_files_aux(handler, filespath, i + 1);
+	h->processes = push_process(h->processes, filespath[i], H_FILE);
+	handle_files_aux(h, filespath, i + 1);
 }
 
 void			handle_files(t_handler *handler, char **filespath)

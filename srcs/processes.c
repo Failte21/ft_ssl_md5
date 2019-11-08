@@ -1,15 +1,10 @@
 #include "../inc/ft_ssl.h"
 
-static t_parse_msg_fn	get_msg_fn_aux(t_type type, unsigned int i)
+static t_parse_msg_fn	get_msg_fn(t_type type, unsigned int i)
 {
 	if (g_parser_handlers[i].type == type)
 		return (g_parser_handlers[i].parse_fn);
-	return (get_msg_fn_aux(type, i + 1));
-}
-
-static t_parse_msg_fn	get_msg_fn(t_type type)
-{
-	return (get_msg_fn_aux(type, 0));
+	return (get_msg_fn(type, i + 1));
 }
 
 static t_process		*init_process(char *input, t_type type)
@@ -19,7 +14,7 @@ static t_process		*init_process(char *input, t_type type)
 	process = malloc(sizeof(t_process));
 	process->type = type;
 	process->input = input;
-	process->parse_msg_fn = get_msg_fn(type);
+	process->parse_msg_fn = get_msg_fn(type, 0);
 	process->next = NULL;
 	return (process);
 }
@@ -32,12 +27,12 @@ t_process				*push_process(t_process *head, char *input, t_type type)
 	return (head);
 }
 
-t_process				*prepend_process(t_process *head, char *input, t_type type)
+t_process				*prepend_process(t_process *h, char *input, t_type type)
 {
 	t_process	*process;
 
 	process = init_process(input, type);
-	process->next = head;
+	process->next = h;
 	return (process);
 }
 
