@@ -25,14 +25,6 @@ static unsigned int	g_k[] =
    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 };
 
-/*
-** Pre-processing (Padding):
-** begin with the original message of length L bits
-** append a single '1' bit
-** append K '0' bits, where K is the minimum number >= 0 such that L + 1 + K + 64 is a multiple of 512
-** append L as a 64-bit big-endian integer, making the total post-processed length a multiple of 512 bits
-*/
-
 static uint32_t	get_k(uint32_t L)
 {
 	uint32_t	mod;
@@ -41,6 +33,13 @@ static uint32_t	get_k(uint32_t L)
 	return (mod == 0 ? 0 : 512 - mod);
 }
 
+/*
+** Pre-processing (Padding):
+** begin with the original message of length L bits
+** append a single '1' bit
+** append K '0' bits, where K is the minimum number >= 0 such that L + 1 + K + 64 is a multiple of 512
+** append L as a 64-bit big-endian integer, making the total post-processed length a multiple of 512 bits
+*/
 static t_mem 	pad(char *s)
 {
 	uint32_t	L;
@@ -50,16 +49,19 @@ static t_mem 	pad(char *s)
 	char		*char_content;
 
 	message_len = ft_strlen(s);
+	// printf("(debug) message_len: %zu\n", message_len);
 	L = message_len * 8;
 	K = get_k(L);
 
 	padded.byte_size = (L + 1 + 64 + K) / 8;
+	// printf("(debug) (padded.byte_size * 8) mod 512: %zu\n", (padded.byte_size * 8) % 512);
+	// printf("(debug) padded.byte_size: %zu\n", padded.byte_size);
 	padded.content = malloc(padded.byte_size);
 	ft_bzero(padded.content, padded.byte_size);
 	padded.n_chunks = (L + K + 64 + 1) / 512;
-
 	
 	char_content = padded.content;
+	// printf("(debug) padded.n_chunks: %zu\n", padded.n_chunks);
 	ft_memcpy(padded.content, s, message_len);
 	char_content[message_len] = 0x80;
 
@@ -72,7 +74,6 @@ static t_mem 	pad(char *s)
 	char_content[padded.byte_size - 6] = bitlen >> 40;
 	char_content[padded.byte_size - 7] = bitlen >> 48;
 	char_content[padded.byte_size - 8] = bitlen >> 56;
-
 	return (padded);
 }
 
@@ -143,17 +144,6 @@ static void		compress(uint32_t *w)
 	g_h7 = g_h7 + h;
 }
 
-static void		process_chunks(uint32_t **chunks, size_t n_chunks, size_t i)
-{
-	uint32_t	*w;
-
-	if (i == n_chunks)
-		return ;
-	w = preprocess(chunks[i]);
-	compress(w);
-	process_chunks(chunks, n_chunks, i + 1);
-}
-
 /*
 ** Produce the final hash value (big-endian):
 */
@@ -161,7 +151,8 @@ static char		*digest(void)
 {
 	char	*hash;
 
-	hash = malloc(1000);
+	hash = malloc(8 * 8 + 1);
+
 	ft_strcpy(hash, ft_itoa_hex_u_fixed(g_h0));
 	ft_strcat(hash, ft_itoa_hex_u_fixed(g_h1));
 	ft_strcat(hash, ft_itoa_hex_u_fixed(g_h2));
@@ -176,11 +167,18 @@ static char		*digest(void)
 char			*hash_sha256(char *message)
 {
 	t_mem		padded;
-	uint32_t	**chunks;
+	size_t		i;
+	uint32_t	*w;
 
 	padded = pad(message);
-	chunks = message_to_chunks(padded.content, padded.n_chunks);
-	process_chunks(chunks, padded.n_chunks, 0);
+	i = 0;
+	while (i < padded.n_chunks)
+	{
+		w = preprocess(((uint32_t *)padded.content) + (16 * i));
+		compress(w);
+		free(w);
+		i++;
+	}
 	free(padded.content);
 	return (digest());
 }
