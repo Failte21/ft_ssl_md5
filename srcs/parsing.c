@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   parsing.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/04 16:08:49 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/04 16:26:49 by lsimon           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../inc/ft_ssl.h"
 
 static int			apply_flags(t_handler *handler, char *flags)
@@ -47,7 +35,8 @@ static int			handle_flags_aux(t_handler *h, char **args, unsigned int i)
 		}
 		return (handle_flags_aux(h, args, i + 1));
 	}
-	return (handle_file(h, args + i));
+	handle_files(h, args + i);
+	return (0);
 }
 
 int					handle_flags(t_handler *handler, char **args)
@@ -69,11 +58,11 @@ t_handler			*init_handler(int ac, char **av)
 		ft_putstr_fd("Error allocating memory for handler structure", 1);
 		return (NULL);
 	}
+	handler->hash_name = av[1];
 	handler->hash_fn = hash_fn;
-	handler->flags = NULL;
-	handler->to_hash = NULL;
 	handler->reversed = false;
 	handler->quiet = false;
 	handler->verbose = false;
+	handler->processes = NULL;
 	return (handler);
 }

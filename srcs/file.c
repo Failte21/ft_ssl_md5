@@ -1,18 +1,6 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   file.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/04 16:07:18 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/04 16:08:06 by lsimon           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../inc/ft_ssl.h"
 
-static int	get_file_content(t_handler *handler, char *filepath)
+char			*handle_file(char *filepath)
 {
 	int		fd;
 	char	*to_hash;
@@ -20,34 +8,27 @@ static int	get_file_content(t_handler *handler, char *filepath)
 	fd = open(filepath, O_RDONLY);
 	if (fd == -1)
 	{
-		printf("(debug): open error %s\n", strerror(errno));
-		return (-1);
+		ft_putstr_fd("ft_ssl: ", 1);
+		ft_putstr_fd(filepath, 1);
+		ft_putstr_fd(": ", 1);
+		ft_putstr_fd(strerror(errno), 1);
+		ft_putchar_fd('\n', 1);
+		return (NULL);
 	}
 	if ((to_hash = get_content(fd)) == NULL)
-	{
-		printf("(debug) error while reading the file\n");
-		return (-1);
-	}
-	printf("(debug) FILE CONTENT: to_hash: %s\n", to_hash);
-	handler->to_hash = to_hash;
-	return (0);
+		return (NULL);
+	return (to_hash);
 }
 
-int			handle_file(t_handler *handler, char **args)
+void			handle_files_aux(t_handler *h, char **filespath, unsigned int i)
 {
-	if (*args != NULL)
-	{
-		if (handler->to_hash != NULL)
-		{
-			printf("(debug) conflict s flag and file\n");
-			return (-1);
-		}
-		if (*(args + 1) != NULL)
-		{
-			printf("(debug) Error too many args\n");
-			return (-1);
-		}
-		return (get_file_content(handler, *args));
-	}
-	return (0);
+	if (filespath[i] == NULL)
+		return ;
+	h->processes = push_process(h->processes, filespath[i], H_FILE);
+	handle_files_aux(h, filespath, i + 1);
+}
+
+void			handle_files(t_handler *handler, char **filespath)
+{
+	handle_files_aux(handler, filespath, 0);
 }

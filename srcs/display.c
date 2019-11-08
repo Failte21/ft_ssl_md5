@@ -1,39 +1,50 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   display.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/04 16:13:13 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/04 16:13:46 by lsimon           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../inc/ft_ssl.h"
 
-static void	print_rev(char *s)
+static void	s_to_upper(char *s)
 {
-	int	i;
+	unsigned int i;
 
-	i = ft_strlen(s) - 1;
-	while (i >= 0)
+	i = 0;
+	while (s[i] != '\0')
 	{
-		write(0, &(s[i]), 1);
-		i--;
+		s[i] = ft_toupper(s[i]);
+		i++;
 	}
 }
 
-void		display(t_handler *handler, char *hashed)
+static void	display_input(t_handler *handler, char *input, bool with_brackets)
 {
-	if (handler->verbose && !handler->quiet)
+	if (!handler->reversed)
 	{
-		ft_putstr(handler->to_hash);
-		ft_putchar('\n');
+		s_to_upper(handler->hash_name);
+		ft_putstr(handler->hash_name);
+		ft_putstr(" (");
 	}
-	if (handler->reversed)
-		print_rev(hashed);
 	else
-		ft_putstr(hashed);
+		ft_putchar(' ');
+	if (with_brackets)
+		ft_putchar('\"');
+	ft_putstr(input);
+	if (with_brackets)
+		ft_putchar('\"');
+	if (!handler->reversed)
+		ft_putstr(") = ");
+}
+
+void		display(t_handler *h, t_process *p, char *ha, char *th)
+{
+	if (h->verbose && p->type == H_STDIN)
+		ft_putstr(th);
+	if (!h->quiet && p->type != H_STDIN)
+	{
+		if (!h->reversed)
+			display_input(h, p->input, p->type == H_STRING);
+	}
+	ft_putstr(ha);
+	if (!h->quiet && p->type != H_STDIN)
+	{
+		if (h->reversed)
+			display_input(h, p->input, p->type == H_STRING);
+	}
 	ft_putchar('\n');
 }

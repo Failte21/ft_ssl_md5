@@ -1,18 +1,6 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   content.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/04 16:04:49 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/07 11:24:18 by lsimon           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../inc/ft_ssl.h"
 
-char				*get_content(int fd)
+char	*get_content(int fd)
 {
 	char			buf[BUF_SIZE];
 	char			*to_hash;
@@ -35,6 +23,13 @@ char				*get_content(int fd)
 			free(tmp);
 		}
 	}
+	to_hash = to_hash != NULL ? to_hash : ft_strdup("");
 	len = ft_strlen(to_hash) - 1;
 	return (to_hash);
+}
+
+char	*handle_stdin(char *s)
+{
+	(void)s;
+	return (get_content(0));
 }

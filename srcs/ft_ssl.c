@@ -1,41 +1,27 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ft_ssl.c                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/04 10:22:26 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/04 16:15:20 by lsimon           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../inc/ft_ssl.h"
 
 int					main(int ac, char **av)
 {
 	t_handler	*h;
-	char		*hashed;
 
 	h = init_handler(ac, av);
 	if (h == NULL)
+	{
+		available_commands();
 		return (1);
+	}
 	if (handle_flags(h, av + 2) == -1)
 	{
 		free(h);
 		return (-1);
 	}
-	h->to_hash = h->to_hash == NULL ? get_content(0) : h->to_hash;
-	if (h->to_hash == NULL)
+	if (ac == 2 || h->processes == NULL || h->verbose)
+		h->processes = prepend_process(h->processes, NULL, H_STDIN);
+	if (h->processes == NULL)
 	{
 		free(h);
 		return (1);
 	}
-	if ((hashed = h->hash_fn(h->to_hash)) == NULL)
-	{
-		free(h);
-		return (1);
-	}
-	display(h, hashed);
+	run_processes(h, h->processes);
 	return (0);
 }
