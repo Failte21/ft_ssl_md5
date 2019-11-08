@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ft_ssl.h                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/04 10:26:16 by lsimon            #+#    #+#             */
-/*   Updated: 2019/11/04 16:24:02 by lsimon           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef FT_SSL_H
 
 # define FT_SSL_H
@@ -26,15 +14,15 @@
 /*
 ** takes a string and return the hashed string
 */
-typedef char		*(*t_hash_fn)(char *);
+typedef char			*(*t_hash_fn)(char *);
 
-typedef struct		s_hash_handler
+typedef struct			s_hash_handler
 {
 	char		*hash;
 	t_hash_fn	hash_fn;
-}					t_hash_handler;
+}						t_hash_handler;
 
-typedef struct		s_handler
+typedef struct			s_handler
 {
 	t_hash_fn	hash_fn;
 	char		*flags;
@@ -43,40 +31,55 @@ typedef struct		s_handler
 	bool		verbose;
 	bool		reversed;
 
-}					t_handler;
+}						t_handler;
+
+typedef struct			s_mem
+{
+	void	*content;
+	size_t	byte_size;
+	size_t	n_chunks;
+}						t_mem;
 
 /*
 ** Flag handler
 */
-typedef void		(*t_flag_fn)(t_handler *handler);
+typedef void			(*t_flag_fn)(t_handler *handler);
 
-typedef struct		s_flag_handler
+typedef struct			s_flag_handler
 {
 	char		flag;
 	t_flag_fn	flag_fn;
-}					t_flag_handler;
+}						t_flag_handler;
 
 /*
 ** Flags
 */
-void				quiet_mode(t_handler *handler);
-void				verbose_mode(t_handler *handler);
-void				reversed_mode(t_handler *handler);
-t_flag_fn			get_flag_fn(char c);
-int					string_mode(t_handler *handler, char *s);
+void					quiet_mode(t_handler *handler);
+void					verbose_mode(t_handler *handler);
+void					reversed_mode(t_handler *handler);
+t_flag_fn				get_flag_fn(char c);
+int						string_mode(t_handler *handler, char *s);
 
-char				*hash_md5(char *s);
-char				*hash_sha256(char *s);
+char					*hash_md5(char *s);
+char					*hash_sha256(char *s);
 
-char				*get_content(int fd);
+char					*get_content(int fd);
 
-int					handle_file(t_handler *handler, char **args);
+int						handle_file(t_handler *handler, char **args);
 
-t_handler			*init_handler(int ac, char **av);
-int					handle_flags(t_handler *handler, char **args);
-t_hash_fn			get_hash_fn(char *hash);
+t_handler				*init_handler(int ac, char **av);
+int						handle_flags(t_handler *handler, char **args);
+t_hash_fn				get_hash_fn(char *hash);
 
-void				display(t_handler *handler, char *hashed);
+/*
+** Utils
+*/
+char					*ft_itoa_base_u(unsigned int n, unsigned int base);
+uint32_t				to_big_endian (uint32_t num);
+uint32_t				rot_right(uint32_t a, size_t b);
+uint32_t				**message_to_chunks(uint32_t *content, size_t n_chunks);
+
+void					display(t_handler *handler, char *hashed);
 
 static t_hash_handler	g_hash_table[] =
 {

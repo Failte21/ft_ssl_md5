@@ -6,7 +6,7 @@
 #    By: lsimon <lsimon@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/10/17 11:11:59 by lsimon            #+#    #+#              #
-#    Updated: 2019/11/04 16:24:13 by lsimon           ###   ########.fr        #
+#    Updated: 2019/11/06 17:34:35 by lsimon           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,6 +30,7 @@ SRC_NAMES += parsing.c
 SRC_NAMES += display.c
 SRC_NAMES += string.c
 SRC_NAMES += hash.c
+SRC_NAMES += hash_utils.c
 
 SRCS = $(addprefix $(SRCS_DIR)/, $(NM_SRC_NAMES))
 
