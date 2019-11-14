@@ -40,7 +40,7 @@ static uint32_t	get_k(uint32_t L)
 ** append K '0' bits, where K is the minimum number >= 0 such that L + 1 + K + 64 is a multiple of 512
 ** append L as a 64-bit big-endian integer, making the total post-processed length a multiple of 512 bits
 */
-static t_mem 	pad(char *s)
+static t_mem 	pad(t_content *c)
 {
 	uint32_t	L;
 	uint32_t	K;
@@ -48,7 +48,8 @@ static t_mem 	pad(char *s)
 	size_t		message_len;
 	char		*char_content;
 
-	message_len = ft_strlen(s);
+	// printf("(debug) c->content: %s\n", c->content);
+	message_len = c->size;
 	// printf("(debug) message_len: %zu\n", message_len);
 	L = message_len * 8;
 	K = get_k(L);
@@ -60,9 +61,9 @@ static t_mem 	pad(char *s)
 	ft_bzero(padded.content, padded.byte_size);
 	padded.n_chunks = (L + K + 64 + 1) / 512;
 	
-	char_content = padded.content;
+	char_content = (char *)padded.content;
 	// printf("(debug) padded.n_chunks: %zu\n", padded.n_chunks);
-	ft_memcpy(padded.content, s, message_len);
+	ft_memcpy(padded.content, c->content, message_len);
 	char_content[message_len] = 0x80;
 
 	uint64_t bitlen = message_len * 8;
@@ -164,13 +165,13 @@ static char		*digest(void)
 	return (hash);
 }
 
-char			*hash_sha256(char *message)
+char			*hash_sha256(t_content *content)
 {
 	t_mem		padded;
 	size_t		i;
 	uint32_t	*w;
 
-	padded = pad(message);
+	padded = pad(content);
 	i = 0;
 	while (i < padded.n_chunks)
 	{

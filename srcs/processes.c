@@ -38,8 +38,8 @@ t_process				*prepend_process(t_process *h, char *input, t_type type)
 
 void					run_processes(t_handler *handler, t_process *head)
 {
-	char	*hashed;
-	char	*to_hash;
+	char		*hashed;
+	t_content	*to_hash;
 
 	if (head == NULL)
 		return ;
@@ -47,7 +47,7 @@ void					run_processes(t_handler *handler, t_process *head)
 	if (to_hash != NULL)
 	{
 		hashed = handler->hash_fn(to_hash);
-		display(handler, head, hashed, to_hash);
+		display(handler, head, hashed, head->input);
 	}
 	run_processes(handler, head->next);
 }
