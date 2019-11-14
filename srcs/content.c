@@ -60,6 +60,7 @@ t_content			*get_content(int fd)
 t_content			*handle_file(char *filepath)
 {
 	int			fd;
+	t_content	*content;
 
 	fd = open(filepath, O_RDONLY);
 	if (fd == -1)
@@ -71,7 +72,9 @@ t_content			*handle_file(char *filepath)
 		ft_putchar_fd('\n', 2);
 		return (NULL);
 	}
-	return (get_content(fd));
+	content = get_content(fd);
+	close(fd);
+	return (content);
 }
 
 

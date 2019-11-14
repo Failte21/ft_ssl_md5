@@ -29,7 +29,7 @@ t_process				*push_process(t_process *head, char *input, t_type type)
 
 void					free_processes(t_process *head)
 {
-	if (head != NULL)
+	if (head == NULL)
 		return ;
 	free_processes(head->next);
 	free(head);
@@ -52,7 +52,9 @@ void					run_processes(t_handler *handler, t_process *head)
 	size_t		len;
 
 	if (head == NULL)
+	{
 		return ;
+	}
 	to_hash = head->parse_msg_fn(head->input);
 	if (to_hash != NULL)
 	{
@@ -60,6 +62,7 @@ void					run_processes(t_handler *handler, t_process *head)
 		len = head->type == H_STDIN ? to_hash->size : ft_strlen(head->input);
 		hashed = handler->hash_fn(to_hash);
 		display(handler, head, hashed, display_input, len);
+		free(hashed);
 	}
 	free_content(to_hash);
 	run_processes(handler, head->next);
