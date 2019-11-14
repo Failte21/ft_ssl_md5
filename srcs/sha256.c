@@ -81,12 +81,11 @@ static t_mem	pad(t_content *c)
 	char_content = (char *)padded.content;
 	ft_memcpy(padded.content, c->content, message_len);
 	char_content[message_len] = 0x80;
-
 	append_msg_len(char_content, padded.byte_size, message_len * 8);
 	return (padded);
 }
 
-static uint32_t *preprocess(uint32_t *chunk)
+static uint32_t	*preprocess(uint32_t *chunk)
 {
 	uint32_t	*w;
 	size_t		i;
@@ -124,19 +123,19 @@ static void		fill_a(uint32_t a[8])
 	}
 }
 
-static void		fill_temp(uint32_t temp[2], uint32_t as[8], size_t i, uint32_t *w)
+static void		fill_temp(uint32_t tmp[2], uint32_t a[8], size_t i, uint32_t *w)
 {
 	uint32_t	s1;
 	uint32_t	ch;
 	uint32_t	s0;
 	uint32_t	maj;
 
-	s1 = rot_right(as[4], 6) ^ rot_right(as[4], 11) ^ rot_right(as[4], 25);
-	ch = (as[4] & as[5]) ^ ((~as[4]) & as[6]);
-	temp[0] = as[7] + s1 + ch + g_k[i] + w[i];
-	s0 = rot_right(as[0], 2) ^ rot_right(as[0], 13) ^ rot_right(as[0], 22);
-	maj = (as[0] & as[1]) ^ (as[0] & as[2]) ^ (as[1] & as[2]);
-	temp[1] = s0 + maj;
+	s1 = rot_right(a[4], 6) ^ rot_right(a[4], 11) ^ rot_right(a[4], 25);
+	ch = (a[4] & a[5]) ^ ((~a[4]) & a[6]);
+	tmp[0] = a[7] + s1 + ch + g_k[i] + w[i];
+	s0 = rot_right(a[0], 2) ^ rot_right(a[0], 13) ^ rot_right(a[0], 22);
+	maj = (a[0] & a[1]) ^ (a[0] & a[2]) ^ (a[1] & a[2]);
+	tmp[1] = s0 + maj;
 }
 
 static void		update_as(uint32_t as[8], uint32_t temp[2])
@@ -165,10 +164,9 @@ static void		update_hs(uint32_t as[8])
 
 static void		compress(uint32_t *w)
 {
-
 	size_t		i;
-	uint32_t 	as[8];
-	uint32_t 	temp[2];
+	uint32_t	as[8];
+	uint32_t	temp[2];
 
 	fill_a(as);
 	i = 0;
@@ -184,36 +182,25 @@ static void		compress(uint32_t *w)
 /*
 ** Produce the final hash value (big-endian):
 */
+
 static char		*digest(void)
 {
 	char	*hash;
 	char	*tmp;
+	size_t	i;
 
 	hash = malloc(8 * 8 + 1);
 	tmp = ft_itoa_hex_u_fixed(g_h[0]);
 	ft_strcpy(hash, tmp);
 	free(tmp);
-	tmp = ft_itoa_hex_u_fixed(g_h[1]);
-	ft_strcat(hash, tmp);
-	free(tmp);
-	tmp = ft_itoa_hex_u_fixed(g_h[2]);
-	ft_strcat(hash, tmp);
-	free(tmp);
-	tmp = ft_itoa_hex_u_fixed(g_h[3]);
-	ft_strcat(hash, tmp);
-	free(tmp);
-	tmp = ft_itoa_hex_u_fixed(g_h[4]);
-	ft_strcat(hash, tmp);
-	free(tmp);
-	tmp = ft_itoa_hex_u_fixed(g_h[5]);
-	ft_strcat(hash, tmp);
-	free(tmp);
-	tmp = ft_itoa_hex_u_fixed(g_h[6]);
-	ft_strcat(hash, tmp);
-	free(tmp);
-	tmp = ft_itoa_hex_u_fixed(g_h[7]);
-	ft_strcat(hash, tmp);
-	free(tmp);
+	i = 1;
+	while (i < 8)
+	{
+		tmp = ft_itoa_hex_u_fixed(g_h[i]);
+		ft_strcat(hash, tmp);
+		free(tmp);
+		i++;
+	}
 	return (hash);
 }
 
