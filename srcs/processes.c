@@ -27,6 +27,14 @@ t_process				*push_process(t_process *head, char *input, t_type type)
 	return (head);
 }
 
+void					free_processes(t_process *head)
+{
+	if (head != NULL)
+		return ;
+	free_processes(head->next);
+	free(head);
+}
+
 t_process				*prepend_process(t_process *h, char *input, t_type type)
 {
 	t_process	*process;

@@ -44,12 +44,12 @@ int					handle_flags(t_handler *handler, char **args)
 	return (handle_flags_aux(handler, args, 0));
 }
 
-t_handler			*init_handler(int ac, char **av)
+t_handler			*init_handler(char **av)
 {
 	t_handler		*handler;
 	t_hash_fn		hash_fn;
 
-	(void)ac;
+	handler = NULL;
 	if ((hash_fn = get_hash_fn(av[1])) == NULL)
 		return (NULL);
 	handler = malloc(sizeof(t_handler));
@@ -65,4 +65,13 @@ t_handler			*init_handler(int ac, char **av)
 	handler->verbose = false;
 	handler->processes = NULL;
 	return (handler);
+}
+
+void				free_handler(t_handler *handler)
+{
+	if (handler != NULL)
+	{
+		free_processes(handler->processes);
+		free(handler);
+	}
 }

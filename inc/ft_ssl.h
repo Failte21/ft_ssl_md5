@@ -105,7 +105,8 @@ t_content				*handle_string(char *s);
 t_content				*handle_stdin(char *s);
 void					free_content(t_content *content);
 
-t_handler				*init_handler(int ac, char **av);
+t_handler				*init_handler(char **av);
+void					free_handler(t_handler *handler);
 int						handle_flags(t_handler *handler, char **args);
 t_hash_fn				get_hash_fn(char *hash);
 
@@ -123,6 +124,7 @@ uint32_t				rot_right(uint32_t a, size_t b);
 t_process				*push_process(t_process *h, char *s, t_type t);
 t_process				*prepend_process(t_process *h, char *s, t_type t);
 void					run_processes(t_handler *handler, t_process *head);
+void					free_processes(t_process *head);
 
 void					handle_files(t_handler *handler, char **filespath);
 

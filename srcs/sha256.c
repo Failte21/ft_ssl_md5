@@ -151,17 +151,33 @@ static void		compress(uint32_t *w)
 static char		*digest(void)
 {
 	char	*hash;
+	char	*tmp;
 
 	hash = malloc(8 * 8 + 1);
-
-	ft_strcpy(hash, ft_itoa_hex_u_fixed(g_h0));
-	ft_strcat(hash, ft_itoa_hex_u_fixed(g_h1));
-	ft_strcat(hash, ft_itoa_hex_u_fixed(g_h2));
-	ft_strcat(hash, ft_itoa_hex_u_fixed(g_h3));
-	ft_strcat(hash, ft_itoa_hex_u_fixed(g_h4));
-	ft_strcat(hash, ft_itoa_hex_u_fixed(g_h5));
-	ft_strcat(hash, ft_itoa_hex_u_fixed(g_h6));
-	ft_strcat(hash, ft_itoa_hex_u_fixed(g_h7));
+	tmp = ft_itoa_hex_u_fixed(g_h0);
+	ft_strcpy(hash, tmp);
+	free(tmp);
+	tmp = ft_itoa_hex_u_fixed(g_h1);
+	ft_strcat(hash, tmp);
+	free(tmp);
+	tmp = ft_itoa_hex_u_fixed(g_h2);
+	ft_strcat(hash, tmp);
+	free(tmp);
+	tmp = ft_itoa_hex_u_fixed(g_h3);
+	ft_strcat(hash, tmp);
+	free(tmp);
+	tmp = ft_itoa_hex_u_fixed(g_h4);
+	ft_strcat(hash, tmp);
+	free(tmp);
+	tmp = ft_itoa_hex_u_fixed(g_h5);
+	ft_strcat(hash, tmp);
+	free(tmp);
+	tmp = ft_itoa_hex_u_fixed(g_h6);
+	ft_strcat(hash, tmp);
+	free(tmp);
+	tmp = ft_itoa_hex_u_fixed(g_h7);
+	ft_strcat(hash, tmp);
+	free(tmp);
 	return (hash);
 }
 
