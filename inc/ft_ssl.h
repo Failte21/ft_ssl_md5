@@ -96,11 +96,14 @@ int						string_mode(t_handler *handler, char *s);
 char					*hash_md5(t_content *content);
 char					*hash_sha256(t_content *content);
 
+/*
+** Content
+*/
 t_content				*get_content(int fd);
-
 t_content				*handle_file(char *filepath);
 t_content				*handle_string(char *s);
 t_content				*handle_stdin(char *s);
+void					free_content(t_content *content);
 
 t_handler				*init_handler(int ac, char **av);
 int						handle_flags(t_handler *handler, char **args);
@@ -123,7 +126,8 @@ void					run_processes(t_handler *handler, t_process *head);
 
 void					handle_files(t_handler *handler, char **filespath);
 
-void					display(t_handler *h, t_process *p, char *ha, char *th);
+void					display(t_handler *h, t_process *p, char *ha,
+						char *th, size_t s);
 
 /*
 ** Usage

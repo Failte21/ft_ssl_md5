@@ -1,5 +1,15 @@
 #include "../inc/ft_ssl.h"
 
+void				free_content(t_content *content)
+{
+	if (content != NULL)
+	{
+		if (content->content != NULL)
+			free(content->content);
+		free(content);
+	}
+}
+
 static t_content	*init_content(void *input, size_t len)
 {
 	t_content	*content;
