@@ -1,12 +1,5 @@
 #include "../inc/ft_ssl.h"
 
-static t_parse_msg_fn	get_msg_fn(t_type type, unsigned int i)
-{
-	if (g_parser_handlers[i].type == type)
-		return (g_parser_handlers[i].parse_fn);
-	return (get_msg_fn(type, i + 1));
-}
-
 static t_process		*init_process(char *input, t_type type)
 {
 	t_process	*process;
@@ -48,6 +41,7 @@ void					run_processes(t_handler *handler, t_process *head)
 {
 	char		*hashed;
 	t_content	*to_hash;
+	t_content	to_display;
 	char		*display_input;
 	size_t		len;
 
@@ -58,10 +52,12 @@ void					run_processes(t_handler *handler, t_process *head)
 	to_hash = head->parse_msg_fn(head->input);
 	if (to_hash != NULL)
 	{
-		display_input = head->type == H_STDIN ? to_hash->content : head->input;
-		len = head->type == H_STDIN ? to_hash->size : ft_strlen(head->input);
+		to_display.content = head->type == H_STDIN ?
+			to_hash->content : head->input;
+		to_display.size = head->type == H_STDIN ?
+			to_hash->size : ft_strlen(head->input);
 		hashed = handler->hash_fn(to_hash);
-		display(handler, head, hashed, display_input, len);
+		display(handler, head, hashed, to_display);
 		free(hashed);
 	}
 	free_content(to_hash);
