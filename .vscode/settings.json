@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "ft_ssl.h": "c",
+        "stdbool.h": "c",
+        "libft.h": "c"
+    }
+}
