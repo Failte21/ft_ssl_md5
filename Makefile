@@ -22,6 +22,7 @@ SRC_NAMES += hash_utils.c
 SRC_NAMES += processes.c
 SRC_NAMES += sha_utils.c
 SRC_NAMES += usage.c
+SRC_NAMES += md5_utils.c
 
 SRCS = $(addprefix $(SRCS_DIR)/, $(NM_SRC_NAMES))
 
