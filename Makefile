@@ -25,6 +25,7 @@ SRC_NAMES += usage.c
 SRC_NAMES += sha256_compress.c
 SRC_NAMES += sha256_pad.c
 SRC_NAMES += inputs.c
+SRC_NAMES += md5_utils.c
 
 SRCS = $(addprefix $(SRCS_DIR)/, $(NM_SRC_NAMES))
 

@@ -3,6 +3,8 @@ ft_ssl
 *.a
 libft.h.gch
 
+#ide
+.vscode
 
 # tests
 mine.txt
