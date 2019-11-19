@@ -38,16 +38,21 @@ t_process				*prepend_process(t_process *h, char *input, t_type type)
 
 void					run_processes(t_handler *handler, t_process *head)
 {
-	char	*hashed;
-	char	*to_hash;
+	char		*hashed;
+	t_content	*to_hash;
+	char		*display_input;
+	size_t		len;
 
 	if (head == NULL)
 		return ;
 	to_hash = head->parse_msg_fn(head->input);
 	if (to_hash != NULL)
 	{
+		display_input = head->type == H_STDIN ? to_hash->content : head->input;
+		len = head->type == H_STDIN ? to_hash->size : ft_strlen(head->input);
 		hashed = handler->hash_fn(to_hash);
-		display(handler, head, hashed, to_hash);
+		display(handler, head, hashed, display_input, len);
 	}
+	free_content(to_hash);
 	run_processes(handler, head->next);
 }

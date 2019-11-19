@@ -11,11 +11,14 @@
 # include <fcntl.h>
 # include <errno.h>
 
-/*
-** takes a string and return the hashed string
-*/
-typedef char			*(*t_hash_fn)(char *);
-typedef char			*(*t_parse_msg_fn)(char *);
+typedef struct	s_content
+{
+	size_t	size;
+	void	*content;
+}				t_content;
+
+typedef char			*(*t_hash_fn)(t_content *);
+typedef t_content		*(*t_parse_msg_fn)(char *);
 
 typedef enum	e_command_type
 {
@@ -90,14 +93,17 @@ void					reversed_mode(t_handler *handler);
 t_flag_fn				get_flag_fn(char c);
 int						string_mode(t_handler *handler, char *s);
 
-char					*hash_md5(char *s);
-char					*hash_sha256(char *s);
+char					*hash_md5(t_content *content);
+char					*hash_sha256(t_content *content);
 
-char					*get_content(int fd);
-
-char					*handle_file(char *filepath);
-char					*handle_string(char *s);
-char					*handle_stdin(char *s);
+/*
+** Content
+*/
+t_content				*get_content(int fd);
+t_content				*handle_file(char *filepath);
+t_content				*handle_string(char *s);
+t_content				*handle_stdin(char *s);
+void					free_content(t_content *content);
 
 t_handler				*init_handler(int ac, char **av);
 int						handle_flags(t_handler *handler, char **args);
@@ -114,13 +120,14 @@ uint32_t				rot_right(uint32_t a, size_t b);
 /*
 ** Processes
 */
-t_process				*push_process(t_process *h, char *input, t_type type);
-t_process				*prepend_process(t_process *h, char *i, t_type type);
+t_process				*push_process(t_process *h, char *s, t_type t);
+t_process				*prepend_process(t_process *h, char *s, t_type t);
 void					run_processes(t_handler *handler, t_process *head);
 
 void					handle_files(t_handler *handler, char **filespath);
 
-void					display(t_handler *h, t_process *p, char *ha, char *th);
+void					display(t_handler *h, t_process *p, char *ha,
+						char *th, size_t s);
 
 /*
 ** Usage
