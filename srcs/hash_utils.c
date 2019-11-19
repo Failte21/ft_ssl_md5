@@ -5,25 +5,6 @@ uint32_t	rot_right(uint32_t a, size_t b)
 	return (((a) >> (b)) | ((a) << (32 - (b))));
 }
 
-/*
-** break message into 512-bit chunks
-*/
-
-uint32_t	**message_to_chunks(uint32_t *content, size_t n_chunks)
-{
-	uint32_t	**chunks;
-	size_t		i;
-
-	chunks = malloc(n_chunks);
-	i = 0;
-	while (i < n_chunks)
-	{
-		chunks[i] = content + ((64 / 8) * i);
-		i++;
-	}
-	return (chunks);
-}
-
 static char	*ft_itoa_base_u_aux(unsigned int n, unsigned int base, char *acc)
 {
 	char			*s;
