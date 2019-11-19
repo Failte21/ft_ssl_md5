@@ -11,21 +11,21 @@
 # include <fcntl.h>
 # include <errno.h>
 
-typedef struct	s_content
+typedef struct			s_content
 {
 	size_t	size;
 	void	*content;
-}				t_content;
+}						t_content;
 
 typedef char			*(*t_hash_fn)(t_content *);
 typedef t_content		*(*t_parse_msg_fn)(char *);
 
-typedef enum	e_command_type
+typedef enum			e_command_type
 {
 	C_STANDARD,
 	C_CIPHER,
 	C_MDIGEST
-}				t_command_type;
+}						t_command_type;
 
 typedef struct			s_hash_handler
 {
@@ -34,12 +34,12 @@ typedef struct			s_hash_handler
 	t_command_type	type;
 }						t_hash_handler;
 
-typedef enum	e_type
+typedef enum			e_type
 {
 	H_STDIN,
 	H_STRING,
 	H_FILE
-}				t_type;
+}						t_type;
 
 typedef struct			s_process
 {
@@ -99,13 +99,22 @@ char					*hash_sha256(t_content *content);
 /*
 ** Content
 */
+
+t_content				*init_content(void *input, size_t len);
 t_content				*get_content(int fd);
+void					free_content(t_content *content);
+
+/*
+** Input
+*/
+
 t_content				*handle_file(char *filepath);
 t_content				*handle_string(char *s);
 t_content				*handle_stdin(char *s);
-void					free_content(t_content *content);
+t_parse_msg_fn			get_msg_fn(t_type type, unsigned int i);
 
-t_handler				*init_handler(int ac, char **av);
+t_handler				*init_handler(char **av);
+void					free_handler(t_handler *handler);
 int						handle_flags(t_handler *handler, char **args);
 t_hash_fn				get_hash_fn(char *hash);
 
@@ -123,11 +132,12 @@ uint32_t				rot_right(uint32_t a, size_t b);
 t_process				*push_process(t_process *h, char *s, t_type t);
 t_process				*prepend_process(t_process *h, char *s, t_type t);
 void					run_processes(t_handler *handler, t_process *head);
+void					free_processes(t_process *head);
 
 void					handle_files(t_handler *handler, char **filespath);
 
-void					display(t_handler *h, t_process *p, char *ha,
-						char *th, size_t s);
+void					display(t_handler *h, t_process *p,
+								char *s, t_content c);
 
 /*
 ** Usage
@@ -135,6 +145,14 @@ void					display(t_handler *h, t_process *p, char *ha,
 void					arg_missing(void);
 void					arg_invalid_command(char *command);
 void					available_commands(void);
+
+/*
+** Sha256
+*/
+
+void					sha256_compress(uint32_t *w, uint32_t h[],
+							uint32_t k[]);
+t_mem					sha256_pad(t_content *c);
 
 static t_hash_handler	g_hash_table[] =
 {

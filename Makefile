@@ -1,6 +1,6 @@
 CC = gcc
 
-CFLAGS = -Werror -Wall -Wextra -g
+CFLAGS =
 
 SRCS_DIR = srcs
 INC_DIR = inc
@@ -22,6 +22,9 @@ SRC_NAMES += hash_utils.c
 SRC_NAMES += processes.c
 SRC_NAMES += sha_utils.c
 SRC_NAMES += usage.c
+SRC_NAMES += sha256_compress.c
+SRC_NAMES += sha256_pad.c
+SRC_NAMES += inputs.c
 
 SRCS = $(addprefix $(SRCS_DIR)/, $(NM_SRC_NAMES))
 

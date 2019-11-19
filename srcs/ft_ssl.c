@@ -4,7 +4,7 @@ int					main(int ac, char **av)
 {
 	t_handler	*h;
 
-	h = init_handler(ac, av);
+	h = init_handler(av);
 	if (h == NULL)
 	{
 		available_commands();
@@ -23,5 +23,6 @@ int					main(int ac, char **av)
 		return (1);
 	}
 	run_processes(h, h->processes);
+	free_handler(h);
 	return (0);
 }

@@ -31,10 +31,10 @@ static void	display_input(t_handler *handler, char *input, bool with_brackets)
 		ft_putstr(") = ");
 }
 
-void		display(t_handler *h, t_process *p, char *ha, char *th, size_t len)
+void		display(t_handler *h, t_process *p, char *ha, t_content to_display)
 {
 	if (h->verbose && p->type == H_STDIN)
-		write(1, th, len);
+		write(1, to_display.content, to_display.size);
 	if (!h->quiet && p->type != H_STDIN)
 	{
 		if (!h->reversed)
