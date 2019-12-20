@@ -47,4 +47,25 @@ else
 			echo "OK"
 		fi
 	done
+
+	echo "$WHITE"
+	cmds=(
+		"echo \"pickle rick\" | ./ft_ssl $1"
+		"echo \"Do not pity the dead, Harry.\" | ./ft_ssl $1 -p"
+		"echo \"Pity the living.\" | ./ft_ssl $1 -q -r"
+		"echo \"And above all,\" > file"
+		"echo \"be sure to handle edge cases carefully\" | ./ft_ssl $1 -p file"
+		"echo \"some of this will not make sense at first\" | ./ft_ssl $1 file"
+		"echo \"but eventually you will understand\" | ./ft_ssl $1 -p -r file"
+		"echo \"GL HF let's go\" | ./ft_ssl $1 -p -s \"foo\" file"
+		"echo \"one more thing\" | ./ft_ssl $1 -r -p -s \"foo\" file -s \"bar\""
+		"echo \"just to be extra clear\" | ./ft_ssl $1 -r -q -p -s \"foo\" file"
+	)
+
+	for (( i = 0; i < ${#cmds[@]} ; i++ )); do
+		printf "\n${cmds[$i]}\n"
+		eval "${cmds[$i]}"
+	done
+
+	rm -f file
 fi
