@@ -42,8 +42,6 @@ void					run_processes(t_handler *handler, t_process *head)
 	char		*hashed;
 	t_content	*to_hash;
 	t_content	to_display;
-	char		*display_input;
-	size_t		len;
 
 	if (head == NULL)
 	{

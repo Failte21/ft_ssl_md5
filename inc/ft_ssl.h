@@ -205,10 +205,17 @@ void					available_commands(void);
 /*
 ** Sha256
 */
-
 void					sha256_compress(uint32_t *w, uint32_t h[],
 							uint32_t k[]);
 t_mem					sha256_pad(t_content *c);
+
+/*
+** MD5
+*/
+void        			init(t_md5_tools *md5);
+uint32_t			    left_rotate(uint32_t elem1, uint32_t ele);
+void			        add_save_values(t_md5_tools *md5);
+void        			fix_endian(t_md5_tools *md5);
 
 static t_hash_handler	g_hash_table[] =
 {
