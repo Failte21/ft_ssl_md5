@@ -49,12 +49,12 @@ static void		message_padding(uint8_t *s, size_t len, t_md5_tools *md5)
 	md5->bb = 0xefcdab89;
 	md5->cc = 0x98badcfe;
 	md5->dd = 0x10325476;
-	md5->s_len = len * 8 + 1;
+	md5->s_len = len * 8;
 	while (md5->s_len % 512 != 448)
 		md5->s_len++;
 	if (!(md5->s = ft_memalloc(md5->s_len + 64)))
 		return ;
-	ft_strcpy((char *)md5->s, (const char *)s);
+	ft_memcpy((char *)md5->s, (const char *)s, len);
 	md5->s_len /= 8;
 	index = len;
 	md5->s[index] = 128;
