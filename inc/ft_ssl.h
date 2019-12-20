@@ -103,7 +103,7 @@ typedef struct			s_md5_tools
 
 }						t_md5_tools;
 
-static uint32_t			k_part[64] =
+static uint32_t			g_k_part[64] =
 {
 	0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
 	0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
@@ -123,8 +123,7 @@ static uint32_t			k_part[64] =
 	0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
 };
 
-
-static uint32_t			s_part[64] =
+static uint32_t			g_s_part[64] =
 {
 	7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
 	5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20,
@@ -132,7 +131,7 @@ static uint32_t			s_part[64] =
 	6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21
 };
 
-static uint32_t			m_part[64] =
+static uint32_t			g_m_part[64] =
 {
 	0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
 	1, 6, 11, 0, 5, 10, 15, 4, 9, 14, 3, 8, 13, 2, 7, 12,
@@ -205,10 +204,17 @@ void					available_commands(void);
 /*
 ** Sha256
 */
-
 void					sha256_compress(uint32_t *w, uint32_t h[],
 							uint32_t k[]);
 t_mem					sha256_pad(t_content *c);
+
+/*
+** MD5
+*/
+void					init(t_md5_tools *md5);
+uint32_t				left_rotate(uint32_t elem1, uint32_t ele);
+void					add_save_values(t_md5_tools *md5);
+void					fix_endian(t_md5_tools *md5);
 
 static t_hash_handler	g_hash_table[] =
 {

@@ -1,23 +1,11 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   md5_utils.c                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lbougero <lbougero@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/11/18 15:26:00 by lbougero          #+#    #+#             */
-/*   Updated: 2019/11/18 15:48:15 by lbougero         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../inc/ft_ssl.h"
 
-uint32_t    left_rotate(uint32_t elem1, uint32_t ele)
+uint32_t	left_rotate(uint32_t elem1, uint32_t ele)
 {
 	return ((elem1 << ele) | (elem1 >> (32 - ele)));
 }
 
-void        add_save_values(t_md5_tools *md5)
+void		add_save_values(t_md5_tools *md5)
 {
 	md5->aa = md5->a + md5->aa;
 	md5->bb = md5->b + md5->bb;
@@ -25,7 +13,7 @@ void        add_save_values(t_md5_tools *md5)
 	md5->dd = md5->d + md5->dd;
 }
 
-void        init(t_md5_tools *md5)
+void		init(t_md5_tools *md5)
 {
 	md5->a = md5->aa;
 	md5->b = md5->bb;
@@ -33,7 +21,7 @@ void        init(t_md5_tools *md5)
 	md5->d = md5->dd;
 }
 
-uint32_t    ft_bit_swapping(uint32_t swap)
+uint32_t	ft_bit_swapping(uint32_t swap)
 {
 	uint32_t	swap_bit;
 
@@ -44,7 +32,7 @@ uint32_t    ft_bit_swapping(uint32_t swap)
 	return (swap_bit);
 }
 
-void        fix_endian(t_md5_tools *md5)
+void		fix_endian(t_md5_tools *md5)
 {
 	md5->aa = ft_bit_swapping(md5->aa);
 	md5->bb = ft_bit_swapping(md5->bb);

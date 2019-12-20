@@ -1,6 +1,6 @@
 CC = gcc
 
-CFLAGS =
+CFLAGS = -Werror -Wall -Wextra
 
 SRCS_DIR = srcs
 INC_DIR = inc
