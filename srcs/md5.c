@@ -34,7 +34,7 @@ static void		algorithm(uint32_t *s, t_md5_tools *md5)
 		md5->d = md5->c;
 		md5->c = md5->b;
 		md5->b = md5->b + left_rotate(f_part + md5->a +\
-				k_part[i] + s[m_part[i]], s_part[i]);
+				g_k_part[i] + s[g_m_part[i]], g_s_part[i]);
 		md5->a = tmp;
 		i++;
 	}
